@@ -1,0 +1,14 @@
+{
+  "name": "portfolio-01",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\"",
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}
