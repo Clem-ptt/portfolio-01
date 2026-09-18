@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import projectRoutes from "./routes/project.routes.js";
+import { errorHandler } from "./middleware/error-handler.js";
 
 dotenv.config();
 
@@ -19,6 +21,10 @@ app.get("/api/health", (_, res) => {
     message: "Backend is running 🚀",
   });
 });
+
+app.use("/api/projects", projectRoutes);
+
+app.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 3000;
 
