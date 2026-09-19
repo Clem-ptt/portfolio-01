@@ -4,6 +4,10 @@ export const projectIdSchema = z.object({
   id: z.coerce.number().int().positive("ID must be a positive integer"),
 });
 
+export const projectSlugSchema = z.object({
+    slug: z.string().min(1, "Slug is required"),
+});
+
 export const createProjectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),

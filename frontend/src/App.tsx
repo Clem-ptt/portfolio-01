@@ -1,15 +1,24 @@
-import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import ProjectsPage from "./pages/ProjectsPage";
+import Navbar from "./components/Navbar";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
 
 function App() {
-    const [message, setMessage] = useState("");
+    return (
+        <>
+            <Navbar />
 
-    useEffect(() => {
-        fetch("http://localhost:3000/api/hello")
-            .then(res => res.json())
-            .then(data => setMessage(data.message));
-    }, []);
-
-    return <h1>{message}</h1>;
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route
+                    path="/projects/:slug"
+                    element={<ProjectDetailPage />}
+                />
+            </Routes>
+        </>
+    );
 }
 
 export default App;

@@ -5,8 +5,9 @@ import {
     deleteProject,
     getProjects,
     getProjectById,
+    getProjectBySlug,
 } from "../services/project.service.js";
-import { sendSuccess } from "../utils/response.js";
+import { sendSuccess, sendError } from "../utils/response.js";
 
 export const getProjectsController = async (
     _req: Request,
@@ -37,6 +38,32 @@ export const getProjectByIdController = async (
                 success: false,
                 message: "Project not found",
             });
+            return;
+        }
+
+        sendSuccess(res, project);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getProjectBySlugController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const slug = req.params.slug;
+
+        if (typeof slug !== "string") {
+            sendError(res, "Slug is required", 400);
+            return;
+        }
+
+        const project = await getProjectBySlug(slug);
+
+        if (!project) {
+            sendError(res, "Project not found", 404);
             return;
         }
 
