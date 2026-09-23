@@ -7,9 +7,10 @@ type ProjectCardProps = {
 
 function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <article>
+        <article className="project-card">
             {project.imageUrl && (
                 <img
+                    className="project-card-image"
                     src={project.imageUrl}
                     alt={project.title}
                 />

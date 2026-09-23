@@ -2,17 +2,13 @@ import { apiClient } from "./client";
 import type { Project } from "../types/project";
 
 export const getProjects = async (): Promise<Project[]> => {
-    const response = await apiClient("/api/projects");
-
-    return response.data;
+    return apiClient<Project[]>("/api/projects");
 };
 
 export const getProjectBySlug = async (
     slug: string
 ): Promise<Project> => {
-    const response = await apiClient(
+    return apiClient<Project>(
         `/api/projects/slug/${slug}`
     );
-
-    return response.data;
 };

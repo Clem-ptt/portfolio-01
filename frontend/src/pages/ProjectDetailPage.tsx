@@ -4,7 +4,7 @@ import { getProjectBySlug } from "../api/projects";
 import type { Project } from "../types/project";
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
-import EmptyState from "../components/ui/EmptyState";
+import PageContainer from "../components/layout/PageContainer";
 
 function ProjectDetailPage() {
     const { slug } = useParams<{ slug: string }>();
@@ -39,26 +39,39 @@ function ProjectDetailPage() {
     }, [slug]);
 
     if (loading) {
-        return  <LoadingState message="Loading project..." />;
+        return (
+            <PageContainer>
+                <LoadingState message="Loading project..." />
+            </PageContainer>
+        );
     }
 
     if (error) {
-        return <ErrorState message={error} />;
+        return (
+            <PageContainer>
+                <ErrorState message={error} />
+            </PageContainer>
+        );
     }
 
     if (!project) {
-        return <ErrorState message="Project not found." />;
+        return (
+            <PageContainer>
+                <ErrorState message="Project not found." />
+            </PageContainer>
+        );
     }
 
     return (
-        <>
+        <PageContainer>
             <Link to="/projects">
                 ← Back to Projects
             </Link>
 
-            <article>
+            <article className="project-detail">
                 {project.imageUrl && (
                     <img
+                        className="project-detail-image"
                         src={project.imageUrl}
                         alt={project.title}
                     />
@@ -72,7 +85,7 @@ function ProjectDetailPage() {
 
                 <p>{project.description}</p>
 
-                <div>
+                <div className="project-detail-links">
                     {project.githubUrl && (
                         <a
                             href={project.githubUrl}
@@ -94,7 +107,7 @@ function ProjectDetailPage() {
                     )}
                 </div>
             </article>
-        </>
+        </PageContainer>
     );
 }
 

@@ -1,53 +1,66 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getProjects } from "../api/projects";
 import type { Project } from "../types/project";
 import ProjectCard from "../components/projects/ProjectCard";
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import EmptyState from "../components/ui/EmptyState";
+import PageContainer from "../components/layout/PageContainer";
 
 function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                const data = await getProjects();
-                setProjects(data);
-            } catch (error) {
-                console.error(error);
-                setError("Failed to load projects.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const loadProjects = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
 
-        loadProjects();
+            const data = await getProjects();
+
+            setProjects(data);
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("Failed to load projects.");
+            }
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadProjects();
+    }, [loadProjects]);
 
     if (loading) {
         return (
-            <>
+            <PageContainer>
                 <h1>Projects</h1>
 
                 <LoadingState message="Loading projects..." />
-            </>
+            </PageContainer>
         );
     }
 
     if (error) {
         return (
-            <>
+            <PageContainer>
                 <h1>Projects</h1>
-                <ErrorState message={error} />
-            </>
+                <ErrorState
+                    message={error}
+                    onRetry={loadProjects}
+                />
+            </PageContainer>
         );
     }
 
     return (
-        <>
+        <PageContainer>
             <section>
                 <h1>Projects</h1>
 
@@ -61,7 +74,7 @@ function ProjectsPage() {
                 {projects.length === 0 ? (
                     <EmptyState message="No projects available." />
                 ) : (
-                    <div>
+                    <div className="project-grid">
                         {projects.map(project => (
                             <ProjectCard
                                 key={project.id}
@@ -71,7 +84,7 @@ function ProjectsPage() {
                     </div>
                 )}
             </section>
-        </>
+        </PageContainer>
     );
 }
 

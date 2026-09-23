@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getProjects } from "../api/projects";
 import type { Project } from "../types/project";
 import ProjectCard from "../components/projects/ProjectCard";
+import PageContainer from "../components/layout/PageContainer";
 
 function HomePage() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -31,7 +32,7 @@ function HomePage() {
     }, []);
 
     return (
-        <>
+        <PageContainer>
             <section>
                 <h1>Hi, I'm Clement.</h1>
 
@@ -72,7 +73,7 @@ function HomePage() {
                 )}
 
                 {!loading && !error && projects.length > 0 && (
-                    <div>
+                    <div className="project-grid">
                         {projects.map(project => (
                             <ProjectCard
                                 key={project.id}
@@ -108,7 +109,7 @@ function HomePage() {
                     about my work?
                 </p>
             </section>
-        </>
+        </PageContainer>
     );
 }
 
