@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { getProjects } from "../api/projects";
 import type { Project } from "../types/project";
-import ProjectCard from "../components/ProjectCard";
+import ProjectCard from "../components/projects/ProjectCard";
+import LoadingState from "../components/ui/LoadingState";
+import ErrorState from "../components/ui/ErrorState";
+import EmptyState from "../components/ui/EmptyState";
 
 function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -25,28 +28,50 @@ function ProjectsPage() {
     }, []);
 
     if (loading) {
-        return <h1>Loading projects...</h1>;
+        return (
+            <>
+                <h1>Projects</h1>
+
+                <LoadingState message="Loading projects..." />
+            </>
+        );
     }
 
     if (error) {
-        return <h1>{error}</h1>;
+        return (
+            <>
+                <h1>Projects</h1>
+                <ErrorState message={error} />
+            </>
+        );
     }
 
     return (
-        <main>
-            <h1>My Projects</h1>
+        <>
+            <section>
+                <h1>Projects</h1>
 
-            {projects.length === 0 ? (
-                <p>No projects found.</p>
-            ) : (
-                projects.map(project => (
-                    <ProjectCard
-                        key={project.id}
-                        project={project}
-                    />
-                ))
-            )}
-        </main>
+                <p>
+                    A collection of applications and projects
+                    I've built while developing my skills.
+                </p>
+            </section>
+
+            <section>
+                {projects.length === 0 ? (
+                    <EmptyState message="No projects available." />
+                ) : (
+                    <div>
+                        {projects.map(project => (
+                            <ProjectCard
+                                key={project.id}
+                                project={project}
+                            />
+                        ))}
+                    </div>
+                )}
+            </section>
+        </>
     );
 }
 

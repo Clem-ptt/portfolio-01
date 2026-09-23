@@ -4,11 +4,18 @@ export const apiClient = async (
     endpoint: string,
     options?: RequestInit
 ) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    const response = await fetch(
+        `${API_BASE_URL}${endpoint}`,
+        options
+    );
+
+    const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+        throw new Error(
+            data.message || `API request failed: ${response.status}`
+        );
     }
 
-    return response.json();
+    return data;
 };

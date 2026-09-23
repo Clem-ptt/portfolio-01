@@ -1,23 +1,26 @@
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ProjectsPage from "./pages/ProjectsPage";
-import Navbar from "./components/Navbar";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
+import MainLayout from "./components/layout/MainLayout";
 
 function App() {
     return (
-        <>
-            <Navbar />
-
-            <Routes>
+        <Routes>
+            <Route element={<MainLayout />}>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/projects" element={<ProjectsPage />} />
+
+                <Route
+                    path="/projects"
+                    element={<ProjectsPage />}
+                />
+
                 <Route
                     path="/projects/:slug"
                     element={<ProjectDetailPage />}
                 />
-            </Routes>
-        </>
+            </Route>
+        </Routes>
     );
 }
 
