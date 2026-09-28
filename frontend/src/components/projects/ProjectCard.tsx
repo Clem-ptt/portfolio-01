@@ -28,7 +28,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                 <span>Featured</span>
             )}
 
-            <div>
+            <div className="project-card-links">
                 {project.githubUrl && (
                     <a
                         href={project.githubUrl}

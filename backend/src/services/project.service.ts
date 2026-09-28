@@ -18,6 +18,17 @@ export const getProjects = async () => {
     });
 };
 
+export const getFeaturedProjects = async () => {
+    return prisma.project.findMany({
+        where: {
+            featured: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+};
+
 export const getProjectById = async (id: number) => {
     return prisma.project.findUnique({
         where: {

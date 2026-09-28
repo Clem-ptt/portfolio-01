@@ -5,6 +5,10 @@ export const getProjects = async (): Promise<Project[]> => {
     return apiClient<Project[]>("/api/projects");
 };
 
+export const getFeaturedProjects = async (): Promise<Project[]> => {
+    return apiClient<Project[]>("/api/projects/featured");
+};
+
 export const getProjectBySlug = async (
     slug: string
 ): Promise<Project> => {

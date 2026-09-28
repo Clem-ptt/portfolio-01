@@ -4,6 +4,7 @@ import {
     updateProject,
     deleteProject,
     getProjects,
+    getFeaturedProjects,
     getProjectById,
     getProjectBySlug,
 } from "../services/project.service.js";
@@ -16,6 +17,20 @@ export const getProjectsController = async (
 ) => {
     try {
         const projects = await getProjects();
+
+        sendSuccess(res, projects);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getFeaturedProjectsController = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projects = await getFeaturedProjects();
 
         sendSuccess(res, projects);
     } catch (error) {

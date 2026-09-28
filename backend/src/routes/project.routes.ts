@@ -9,6 +9,7 @@ import {
 import {
     createProjectController,
     getProjectsController,
+    getFeaturedProjectsController,
     getProjectByIdController,
     getProjectBySlugController,
     updateProjectController,
@@ -19,9 +20,10 @@ const router = Router();
 
 router.get("/", getProjectsController);
 router.get("/slug/:slug", validate(projectSlugSchema, "params"), getProjectBySlugController);
+router.get("/featured", getFeaturedProjectsController);
 router.get("/:id", validate(projectIdSchema, "params"), getProjectByIdController);
 router.post("/", validate(createProjectSchema), createProjectController);
-router.put("/:id", validate(projectIdSchema, "params"), validate(updateProjectSchema), updateProjectController);
+router.patch("/:id", validate(projectIdSchema, "params"), validate(updateProjectSchema), updateProjectController);
 router.delete("/:id", validate(projectIdSchema, "params"), deleteProjectController);
 
 export default router;

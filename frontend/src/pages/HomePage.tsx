@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getProjects } from "../api/projects";
+import { getFeaturedProjects } from "../api/projects";
 import type { Project } from "../types/project";
 import ProjectCard from "../components/projects/ProjectCard";
 import PageContainer from "../components/layout/PageContainer";
@@ -13,13 +13,9 @@ function HomePage() {
     useEffect(() => {
         const loadFeaturedProjects = async () => {
             try {
-                const data = await getProjects();
+                const data = await getFeaturedProjects();
 
-                const featuredProjects = data.filter(
-                    project => project.featured
-                );
-
-                setProjects(featuredProjects);
+                setProjects(data);
             } catch (error) {
                 console.error(error);
                 setError("Failed to load featured projects.");
