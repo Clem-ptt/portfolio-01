@@ -12,7 +12,10 @@ export const apiClient = async <T>(
 ): Promise<T> => {
     const response = await fetch(
         `${API_BASE_URL}${endpoint}`,
-        options
+        {
+            ...options,
+            credentials: "include",
+        }
     );
 
     let data:

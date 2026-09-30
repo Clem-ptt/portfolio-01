@@ -1,8 +1,12 @@
 import { Route, Routes } from "react-router-dom";
+import MainLayout from "./components/layout/MainLayout";
 import HomePage from "./pages/HomePage";
 import ProjectsPage from "./pages/ProjectsPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
-import MainLayout from "./components/layout/MainLayout";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminPage from "./pages/AdminPage";
+import AdminProjectsPage from "./pages/AdminProjectsPage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
     return (
@@ -19,6 +23,30 @@ function App() {
                     path="/projects/:slug"
                     element={<ProjectDetailPage />}
                 />
+
+                <Route 
+                    path="/admin/login" 
+                    element={<AdminLoginPage />} 
+                />
+
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <AdminPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/projects"
+                    element={
+                        <ProtectedRoute>
+                            <AdminProjectsPage />
+                        </ProtectedRoute>
+                    }
+                />
+
             </Route>
         </Routes>
     );
