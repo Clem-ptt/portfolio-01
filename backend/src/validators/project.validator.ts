@@ -29,3 +29,14 @@ export const createProjectSchema = z.object({
 });
 
 export const updateProjectSchema = createProjectSchema.partial();
+
+export const projectImageParamsSchema = z.object({
+    projectId: z.coerce
+        .number()
+        .int()
+        .positive("Project ID must be a positive integer"),
+    imageId: z.coerce
+        .number()
+        .int()
+        .positive("Image ID must be a positive integer"),
+});

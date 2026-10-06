@@ -3,9 +3,19 @@ import type { Project } from "../../types/project";
 
 type ProjectCardProps = {
     project: Project;
+    showAdminActions?: boolean;
+    onEdit?: () => void;
+    onDelete?: () => void;
+    onManageImages?: () => void;
 };
 
-function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({ 
+    project, 
+    showAdminActions = false, 
+    onEdit, 
+    onDelete,
+    onManageImages
+}: ProjectCardProps) {
     return (
         <article className="project-card">
             {project.imageUrl && (
@@ -47,6 +57,31 @@ function ProjectCard({ project }: ProjectCardProps) {
                     >
                         Live Demo
                     </a>
+                )}
+
+                {showAdminActions && (
+                    <div>
+                        <button
+                            type="button"
+                            onClick={onEdit}
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={onDelete}
+                        >
+                            Delete
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={onManageImages}
+                        >
+                            Images
+                        </button>
+                    </div>
                 )}
             </div>
         </article>

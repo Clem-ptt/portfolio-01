@@ -9,4 +9,11 @@ export type Project = {
     featured: boolean;
     createdAt: string;
     updatedAt: string;
+    images: ProjectImage[];
+};
+
+export type ProjectImage = {
+    id: number;
+    url: string;
+    publicId: string;
 };

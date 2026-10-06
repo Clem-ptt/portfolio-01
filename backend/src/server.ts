@@ -5,6 +5,7 @@ import projectRoutes from "./routes/project.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { sessionMiddleware } from "./config/session.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ app.get("/api/health", (_, res) => {
 app.use("/api/auth", authRoutes);
 
 app.use("/api/projects", projectRoutes);
+
+app.use("/api/uploads", uploadRoutes);
 
 app.use(errorHandler);
 

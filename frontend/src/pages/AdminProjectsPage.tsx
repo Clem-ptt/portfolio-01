@@ -2,14 +2,62 @@ import { useCallback, useEffect, useState } from "react";
 import { getProjects, deleteProject } from "../api/projects";
 import type { Project } from "../types/project";
 import ProjectForm from "../components/projects/ProjectForm";
+import ProjectCard from "../components/projects/ProjectCard";
+import ProjectImageManager from "../components/projects/ProjectImageManager";
 
 const AdminProjectsPage = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [editingProject, setEditingProject] =
         useState<Project | null>(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [imageProject, setImageProject] =
+        useState<Project | null>(null);
+
+    const handleManageImages = (project: Project) => {
+        setImageProject(project);
+    };
+    
+    const handleCloseImageManager = () => {
+        setImageProject(null);
+    };
+
+    const loadProjects = useCallback(async () => {
+        try {
+            setError("");
+            const data = await getProjects();
+            setProjects(data);
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load projects."
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadProjects();
+    }, [loadProjects]);
+
+    const handleCreate = () => {
+        setEditingProject(null);
+        setIsFormOpen(true);
+    };
+
+    const handleEdit = (project: Project) => {
+        setEditingProject(project);
+        setIsFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setIsFormOpen(false);
+        setEditingProject(null);
+    };
 
     const handleDelete = async (id: number) => {
         const confirmed = window.confirm(
@@ -37,26 +85,6 @@ const AdminProjectsPage = () => {
         }
     };
 
-    const loadProjects = useCallback(async () => {
-        try {
-            setError("");
-            const data = await getProjects();
-            setProjects(data);
-        } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to load projects."
-            );
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        loadProjects();
-    }, [loadProjects]);
-
     if (isLoading) {
         return <p>Loading projects...</p>;
     }
@@ -69,42 +97,65 @@ const AdminProjectsPage = () => {
         <main>
             <h1>Projects</h1>
 
-            <ProjectForm
-                project={editingProject ?? undefined}
-                onSaved={() => {
-                    setEditingProject(null);
-                    loadProjects();
-                }}
-            />
-            
+            <button
+                type="button"
+                onClick={handleCreate}
+            >
+                Create Project
+            </button>
+
             {projects.length === 0 ? (
                 <p>No projects found.</p>
             ) : (
                 <ul>
                     {projects.map((project) => (
                         <li key={project.id}>
-                        <h2>{project.title}</h2>
-                        <p>{project.description}</p>
+                            <ProjectCard
+                                project={project}
+                                showAdminActions
+                                onEdit={() => handleEdit(project)}
+                                onDelete={() => handleDelete(project.id)}
+                                onManageImages={() => handleManageImages(project)}
+                            />
 
-                        <button
-                            type="button"
-                            onClick={() => setEditingProject(project)}
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => handleDelete(project.id)}
-                            disabled={deletingId === project.id}
-                        >
-                            {deletingId === project.id
-                                ? "Deleting..."
-                                : "Delete"}
-                        </button>
-                    </li>
+                            {deletingId === project.id && (
+                                <p>Deleting...</p>
+                            )}
+                        </li>
                     ))}
                 </ul>
+            )}
+
+            {isFormOpen && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="project-form-title"
+                >
+                    <div>
+                        <h2 id="project-form-title">
+                            {editingProject
+                                ? "Edit Project"
+                                : "Create Project"}
+                        </h2>
+
+                        <ProjectForm
+                            project={editingProject ?? undefined}
+                            onSaved={async () => {
+                                handleCloseForm();
+                                await loadProjects();
+                            }}
+                            onCancel={handleCloseForm}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {imageProject && (
+                <ProjectImageManager
+                    project={imageProject}
+                    onClose={handleCloseImageManager}
+                />
             )}
         </main>
     );

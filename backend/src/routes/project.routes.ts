@@ -7,6 +7,7 @@ import {
     updateProjectSchema,
     projectIdSchema,
     projectSlugSchema,
+    projectImageParamsSchema,
 } from "../validators/project.validator.js";
 import {
     createProjectController,
@@ -16,30 +17,54 @@ import {
     getProjectBySlugController,
     updateProjectController,
     deleteProjectController,
+    getProjectImagesController,
+    deleteProjectImageController,
+    setProjectMainImageController,
 } from "../controllers/project.controller.js";
 
 
 const router = Router();
 
 router.get(
-    "/", 
+    "/",
     getProjectsController
 );
 
 router.get(
-    "/slug/:slug", 
-    validate(projectSlugSchema, "params"), 
-    getProjectBySlugController
-);
-
-router.get(
-    "/featured", 
+    "/featured",
     getFeaturedProjectsController
 );
 
 router.get(
-    "/:id", 
-    validate(projectIdSchema, "params"), 
+    "/slug/:slug",
+    validate(projectSlugSchema, "params"),
+    getProjectBySlugController
+);
+
+router.get(
+    "/:id/images",
+    validate(projectIdSchema, "params"),
+    getProjectImagesController
+);
+
+router.patch(
+    "/:projectId/images/:imageId/main",
+    requireAuth,
+    requireRole("ADMIN"),
+    validate(projectImageParamsSchema, "params"),
+    setProjectMainImageController
+);
+
+router.delete(
+    "/:projectId/images/:imageId",
+    requireAuth,
+    requireRole("ADMIN"),
+    deleteProjectImageController
+);
+
+router.get(
+    "/:id",
+    validate(projectIdSchema, "params"),
     getProjectByIdController
 );
 

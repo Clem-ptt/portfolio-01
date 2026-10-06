@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getProjectBySlug } from "../api/projects";
-import type { Project } from "../types/project";
+import { getProjectBySlug, getProjectImages } from "../api/projects";
+import type { Project, ProjectImage } from "../types/project";
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import PageContainer from "../components/layout/PageContainer";
@@ -10,6 +10,7 @@ function ProjectDetailPage() {
     const { slug } = useParams<{ slug: string }>();
 
     const [project, setProject] = useState<Project | null>(null);
+    const [images, setImages] = useState<ProjectImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +25,9 @@ function ProjectDetailPage() {
             try {
                 const data = await getProjectBySlug(slug);
                 setProject(data);
+
+                const projectImages = await getProjectImages(data.id);
+                setImages(projectImages);
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error.message);
@@ -84,6 +88,18 @@ function ProjectDetailPage() {
                 )}
 
                 <p>{project.description}</p>
+
+                {images.length > 0 && (
+                    <div className="project-detail-images">
+                        {images.map((image) => (
+                            <img
+                                key={image.id}
+                                src={image.url}
+                                alt={`${project.title} image`}
+                            />
+                        ))}
+                    </div>
+                )}
 
                 <div className="project-detail-links">
                     {project.githubUrl && (

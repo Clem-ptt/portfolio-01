@@ -24,6 +24,7 @@ model Project {
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  images      ProjectImage[]
 }
 
 model User {
@@ -37,4 +38,13 @@ model User {
 
 enum Role {
   ADMIN
+}
+
+model ProjectImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  publicId  String
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

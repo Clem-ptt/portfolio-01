@@ -7,8 +7,13 @@ import {
     getFeaturedProjects,
     getProjectById,
     getProjectBySlug,
+    getProjectImages,
+    deleteProjectImage,
+    setProjectMainImage,
 } from "../services/project.service.js";
 import { sendSuccess, sendError } from "../utils/response.js";
+
+// #region Project Controllers
 
 export const getProjectsController = async (
     _req: Request,
@@ -133,3 +138,66 @@ export const deleteProjectController = async (
         next(error);
     }
 };
+
+// #endregion
+
+
+// #region Project Image Controllers
+
+export const getProjectImagesController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projectId = Number(req.params.id);
+
+        const images = await getProjectImages(projectId);
+
+        sendSuccess(res, images);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteProjectImageController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projectId = Number(req.params.projectId);
+        const imageId = Number(req.params.imageId);
+
+        const image = await deleteProjectImage(
+            projectId,
+            imageId
+        );
+
+        sendSuccess(res, image);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const setProjectMainImageController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projectId = Number(req.params.projectId);
+        const imageId = Number(req.params.imageId);
+
+        const project = await setProjectMainImage(
+            projectId,
+            imageId
+        );
+
+        sendSuccess(res, project);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// #endregion

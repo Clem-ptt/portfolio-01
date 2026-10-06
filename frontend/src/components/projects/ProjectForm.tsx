@@ -9,11 +9,13 @@ import type { Project } from "../../types/project";
 type ProjectFormProps = {
     project?: Project;
     onSaved: () => void;
+    onCancel: () => void;
 };
 
 const ProjectForm = ({
     project,
     onSaved,
+    onCancel,
 }: ProjectFormProps) => {
     const [form, setForm] = useState<CreateProject>({
         title: project?.title ?? "",
@@ -53,10 +55,17 @@ const ProjectForm = ({
         setIsSubmitting(true);
 
         try {
+            const formData = {
+                ...form,
+                imageUrl: form.imageUrl || undefined,
+                githubUrl: form.githubUrl || undefined,
+                liveUrl: form.liveUrl || undefined,
+            };
+
             if (project) {
-                await updateProject(project.id, form);
+                await updateProject(project.id, formData);
             } else {
-                await createProject(form);
+                await createProject(formData);
             }
 
             onSaved();
@@ -114,19 +123,6 @@ const ProjectForm = ({
                 </div>
 
                 <div>
-                    <label htmlFor="imageUrl">
-                        Image URL
-                    </label>
-                    <input
-                        id="imageUrl"
-                        name="imageUrl"
-                        type="url"
-                        value={form.imageUrl}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div>
                     <label htmlFor="githubUrl">
                         GitHub URL
                     </label>
@@ -175,6 +171,14 @@ const ProjectForm = ({
                         : project
                             ? "Update Project"
                             : "Create Project"}
+                </button>
+
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    disabled={isSubmitting}
+                >
+                    Cancel
                 </button>
             </form>
         </section>

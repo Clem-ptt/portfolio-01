@@ -10,6 +10,8 @@ type CreateProjectData = {
     featured?: boolean;
 };
 
+// #region Project Service
+
 export const getProjects = async () => {
     return prisma.project.findMany({
         orderBy: {
@@ -70,3 +72,67 @@ export const deleteProject = async (
         },
     });
 };
+
+// #endregion
+
+// #region Project Image Service
+
+export const createProjectImage = async (
+    projectId: number,
+    url: string,
+    publicId: string
+) => {
+    return prisma.projectImage.create({
+        data: {
+            projectId,
+            url,
+            publicId,
+        },
+    });
+};
+
+export const getProjectImages = async (
+    projectId: number
+) => {
+    return prisma.projectImage.findMany({
+        where: { projectId },
+        orderBy: { createdAt: "asc" },
+    });
+};
+
+export const deleteProjectImage = async (
+    projectId: number,
+    imageId: number
+) => {
+    return prisma.projectImage.delete({
+        where: {
+            id: imageId,
+            projectId,
+        },
+    });
+};
+
+export const setProjectMainImage = async (
+    projectId: number,
+    imageId: number
+) => {
+    const image = await prisma.projectImage.findFirst({
+        where: {
+            id: imageId,
+            projectId,
+        },
+    });
+
+    if (!image) {
+        throw new Error("Project image not found");
+    }
+
+    return prisma.project.update({
+        where: { id: projectId },
+        data: {
+            imageUrl: image.url,
+        },
+    });
+};
+
+// #endregion
