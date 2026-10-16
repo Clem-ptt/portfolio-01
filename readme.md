@@ -448,9 +448,65 @@ Testing covers project operations, validation, error handling, authentication, a
 
 ## Docker
 
-Docker configuration is planned for a later development phase.
+The application runs using Docker Compose with three services:
 
-The intended setup will provide consistent application environments and may include the frontend, backend, PostgreSQL, environment configuration, and database migrations.
+- **Frontend:** React, TypeScript, Vite, and Nginx
+- **Backend:** Node.js, Express, TypeScript, and Prisma
+- **Database:** PostgreSQL 18
+
+### Prerequisites
+- Docker Desktop with Docker Compose
+
+### Environment Configuration
+
+Create a root `.env` file using `.env.example` as a reference. Configure the required database password, session secret, and Cloudinary credentials.
+
+Never commit `.env` or expose application secrets.
+
+### Start the Application
+
+From the project root, run:
+
+```bash
+docker compose up -d --build
+```
+
+### Access the Services
+
+| Service | Local URL |
+|---|---|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3000 |
+| PostgreSQL | localhost:5433 |
+
+### Apply Database Migrations
+
+```bash
+docker compose exec backend npx prisma migrate deploy
+```
+
+### Check Container Status
+
+```bash
+docker compose ps
+```
+
+### View Logs
+
+```bash
+docker compose logs --tail=50 backend
+```
+
+Replace `backend` with `frontend` or `db` to inspect another service.
+
+### Stop the Application
+
+```bash
+docker compose down
+```
+
+The PostgreSQL database uses a named Docker volume to persist data when containers are stopped. Stopping the services does not normally delete that volume.
+
 
 ## CI/CD
 
@@ -523,11 +579,11 @@ Public project pages use readable URLs such as `/projects/my-project`, while num
 - [x] Cloudinary image uploads and project image management
 - [x] Backend automated testing
 - [x] API and frontend manual verification
+- [x] Security and production hardening
+- [x] Docker and containerization
 
 ### Planned
 
-- [ ] Security and production hardening
-- [ ] Docker and containerization
 - [ ] CI/CD
 - [ ] Production deployment
 - [ ] Final UI refinement

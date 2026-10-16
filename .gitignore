@@ -55,6 +55,8 @@ Thumbs.db
 # ==========================
 prisma/dev.db
 prisma/dev.db-journal
+# Generated Prisma client
+backend/src/generated/prisma/
 
 # ==========================
 # Temporary files

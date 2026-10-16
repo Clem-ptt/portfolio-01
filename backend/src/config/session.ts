@@ -5,6 +5,10 @@ if (!process.env.SESSION_SECRET) {
     throw new Error("SESSION_SECRET must be configured.");
 }
 
+if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL must be configured.");
+}
+
 const PgSession = connectPgSimple(session);
 
 export const sessionMiddleware = session({
