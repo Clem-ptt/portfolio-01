@@ -1,4 +1,6 @@
 import { prisma } from "../lib/prisma.js";
+import { deleteUploadedImage } from "./upload.service.js";
+
 
 type CreateProjectData = {
     title: string;
@@ -63,13 +65,38 @@ export const updateProject = async (
     });
 };
 
-export const deleteProject = async (
-    id: number
-) => {
-    return prisma.project.delete({
-        where: {
-            id,
+export const deleteProject = async (id: number) => {
+    const project = await prisma.project.findUnique({
+        where: { id },
+        include: {
+            images: {
+                select: { publicId: true },
+            },
         },
+    });
+
+    if (!project) {
+        throw new Error("Project not found");
+    }
+
+    const results = await Promise.allSettled(
+        project.images.map((image) =>
+            deleteUploadedImage(image.publicId)
+        )
+    );
+
+    const failedDeletions = results.some(
+        (result) => result.status === "rejected"
+    );
+
+    if (failedDeletions) {
+        throw new Error(
+            "Some project images could not be deleted from Cloudinary"
+        );
+    }
+
+    return prisma.project.delete({
+        where: { id },
     });
 };
 
@@ -104,11 +131,42 @@ export const deleteProjectImage = async (
     projectId: number,
     imageId: number
 ) => {
-    return prisma.projectImage.delete({
+    const image = await prisma.projectImage.findFirst({
         where: {
             id: imageId,
             projectId,
         },
+    });
+
+    if (!image) {
+        throw new Error("Project image not found");
+    }
+
+    await deleteUploadedImage(image.publicId);
+
+    return prisma.$transaction(async (tx) => {
+        const project = await tx.project.findUnique({
+            where: { id: projectId },
+            select: { imageUrl: true },
+        });
+
+        const deletedImage = await tx.projectImage.delete({
+            where: { id: imageId },
+        });
+
+        if (project?.imageUrl === image.url) {
+            const replacement = await tx.projectImage.findFirst({
+                where: { projectId },
+                orderBy: { createdAt: "asc" },
+            });
+
+            await tx.project.update({
+                where: { id: projectId },
+                data: { imageUrl: replacement?.url ?? null },
+            });
+        }
+
+        return deletedImage;
     });
 };
 
@@ -124,14 +182,12 @@ export const setProjectMainImage = async (
     });
 
     if (!image) {
-        throw new Error("Project image not found");
+        return null;
     }
 
     return prisma.project.update({
         where: { id: projectId },
-        data: {
-            imageUrl: image.url,
-        },
+        data: { imageUrl: image.url },
     });
 };
 

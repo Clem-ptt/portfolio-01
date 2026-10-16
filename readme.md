@@ -4,117 +4,129 @@
 
 A full-stack personal portfolio application built to showcase projects, technical skills, and development experience.
 
-The project is designed as a production-style application rather than a static portfolio page. It includes a React frontend, an Express/TypeScript backend, PostgreSQL database integration through Prisma, API validation, centralized error handling, and project management functionality.
+The project is designed as a production-style application using React, TypeScript, Express, PostgreSQL, and Prisma. It includes public project pages, an authenticated admin interface, project management, image uploads, request validation, centralized error handling, and automated backend tests.
 
-The application is being developed incrementally, with authentication, image uploads, testing, containerization, CI/CD, deployment, and UI refinement planned for later phases.
+Development follows an incremental roadmap focused on practical full-stack engineering, security, testing, and deployment.
 
 ## Features
 
 ### Implemented
 
-* Project listing
-* Project detail pages
-* Slug-based project URLs
-* Project CRUD API
-* Featured projects API
-* API request validation
-* Centralized API error handling
-* Consistent API response format
-* React Router navigation
-* Frontend loading, error, and empty states
-* PostgreSQL database integration
-* Prisma ORM integration
-* Layered backend architecture
-* Frontend API abstraction
+- Public project listing and detail pages
+- Slug-based project URLs
+- Featured projects
+- Project CRUD operations
+- Authenticated admin login and logout
+- Session-based authentication
+- Role-based authorization
+- Admin project management interface
+- Project image uploads using Cloudinary
+- Multiple images per project
+- Main image selection and image deletion
+- Request validation using Zod
+- Centralized API error handling
+- Consistent API response format
+- PostgreSQL integration using Prisma ORM
+- React Router navigation
+- Frontend API abstraction
+- Loading, error, and empty states
+- Backend automated tests
+- TypeScript compilation checks
 
-### Planned
+### In Progress / Planned
 
-* Authentication
-* Admin/project management interface
-* Image uploads
-* Automated testing
-* Security hardening
-* Docker
-* CI/CD
-* Production deployment
-* Responsive UI and visual refinement
+- Security and production hardening
+- Docker and containerization
+- CI/CD pipeline
+- Production deployment
+- Final responsive UI and visual refinement
+- Screenshots and final documentation improvements
 
 ## Tech Stack
 
 ### Frontend
-
-* React
-* TypeScript
-* Vite
-* React Router
+- React
+- TypeScript
+- Vite
+- React Router
 
 ### Backend
+- Node.js
+- Express 5
+- TypeScript
+- Zod
+- Prisma ORM
+- Express Session
 
-* Node.js
-* Express
-* TypeScript
-* Zod
-* Prisma
+### Database and Storage
+- PostgreSQL
+- Cloudinary for image storage
+- `connect-pg-simple` for PostgreSQL-backed sessions
 
-### Database
-
-* PostgreSQL
-
-### Infrastructure
-
-* Local development environment
-* Docker — planned
-* CI/CD — planned
-* Production deployment — planned
+### Testing and Development
+- Vitest and Supertest for backend testing
+- Postman for manual API testing
+- npm
+- Git and GitHub
 
 ## Architecture
 
 The application follows a layered full-stack architecture:
 
 ```text
-React
-  ↓
+React Frontend
+      |
+      v
 HTTP / REST API
-  ↓
+      |
+      v
 Express Routes
-  ↓
-Middleware / Validation
-  ↓
+      |
+      v
+Middleware and Validation
+      |
+      v
 Controllers
-  ↓
+      |
+      v
 Services
-  ↓
-Prisma
-  ↓
+      |
+      v
+Prisma ORM
+      |
+      v
 PostgreSQL
 ```
 
+Cloudinary handles image storage, while PostgreSQL stores project metadata and image references.
+
 ### Frontend
 
-The frontend is separated into pages, reusable components, API functions, and shared types.
+The frontend separates pages, reusable components, API functions, and shared TypeScript types.
 
 ```text
-Pages / Components
-        ↓
-     API Layer
-        ↓
+Pages and Components
+         |
+         v
+      API Layer
+         |
+         v
    Backend REST API
 ```
 
-The API layer keeps HTTP communication separate from UI components. This allows pages and components to work with application-level functions such as `getProjects()` and `getProjectBySlug()` rather than directly handling API URLs and response envelopes.
+The API layer keeps HTTP communication separate from UI components, making the frontend easier to maintain and test.
 
 ### Backend
 
-The backend separates HTTP handling from application logic and database access.
+The backend separates responsibilities across several layers:
 
-* **Routes** — define API endpoints.
-* **Middleware** — handles cross-cutting request processing and validation.
-* **Controllers** — handle HTTP requests and responses.
-* **Services** — contain application and data-access operations.
-* **Prisma** — handles database communication.
-* **PostgreSQL** — stores application data.
-
-This separation keeps individual responsibilities clear and makes the application easier to maintain, test, and extend.
+- **Routes:** Define API endpoints and middleware order.
+- **Middleware:** Handles authentication, authorization, validation, uploads, and request processing.
+- **Controllers:** Handle HTTP requests and responses.
+- **Services:** Contain application logic and database operations.
+- **Prisma:** Provides type-safe database access.
+- **PostgreSQL:** Stores application data.
+- **Cloudinary:** Stores uploaded project images.
 
 ## Project Structure
 
@@ -123,58 +135,32 @@ Portfolio-01/
 ├── frontend/
 │   └── src/
 │       ├── api/
-│       │   ├── client.ts
-│       │   └── projects.ts
 │       ├── components/
+│       │   ├── auth/
 │       │   ├── layout/
-│       │   │   ├── MainLayout.tsx
-│       │   │   ├── Navbar.tsx
-│       │   │   └── PageContainer.tsx
-│       │   ├── ui/
-│       │   │   ├── LoadingState.tsx
-│       │   │   ├── ErrorState.tsx
-│       │   │   └── EmptyState.tsx
-│       │   └── projects/
-│       │       └── ProjectCard.tsx
+│       │   ├── projects/
+│       │   └── ui/
 │       ├── pages/
-│       │   ├── HomePage.tsx
-│       │   ├── ProjectsPage.tsx
-│       │   └── ProjectDetailPage.tsx
-│       ├── types/
-│       │   ├── api.ts
-│       │   └── project.ts
-│       ├── App.tsx
-│       └── main.tsx
-│
+│       └── types/
 ├── backend/
 │   ├── prisma/
 │   │   ├── migrations/
-│   │   └── schema.prisma
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   └── project.controller.ts
-│   │   ├── generated/
-│   │   │   └── prisma/
-│   │   ├── lib/
-│   │   │   └── prisma.ts
-│   │   ├── middleware/
-│   │   │   ├── validate.ts
-│   │   │   └── error-handler.ts
-│   │   ├── routes/
-│   │   │   └── project.routes.ts
-│   │   ├── services/
-│   │   │   └── project.service.ts
-│   │   ├── types/
-│   │   │   └── api.ts
-│   │   ├── utils/
-│   │   │   └── response.ts
-│   │   ├── validators/
-│   │   │   └── project.validator.ts
-│   │   └── server.ts
-│   ├── .env
-│   ├── prisma.config.ts
-│   └── package.json
-│
+│   │   ├── schema.prisma
+│   │   └── seed.ts
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       ├── generated/
+│       ├── lib/
+│       ├── middleware/
+│       ├── routes/
+│       ├── services/
+│       ├── types/
+│       ├── utils/
+│       ├── validators/
+│       ├── __tests__/
+│       ├── app.ts
+│       └── server.ts
 ├── package.json
 ├── package-lock.json
 └── README.md
@@ -188,9 +174,9 @@ Portfolio-01/
 http://localhost:3000
 ```
 
-All API responses use a consistent response envelope.
+### Response Format
 
-Successful response:
+Successful responses use a consistent response envelope.
 
 ```json
 {
@@ -199,7 +185,7 @@ Successful response:
 }
 ```
 
-Error response:
+Error responses use the following structure:
 
 ```json
 {
@@ -208,115 +194,48 @@ Error response:
 }
 ```
 
-Validation errors may additionally include an `errors` field containing validation details.
+Validation errors may also include an `errors` field.
+
+### Health
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/health` | Check backend availability |
+
+### Authentication
+
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| GET | `/api/auth/me` | Get the current authenticated user | Public/session-aware |
+| POST | `/api/auth/login` | Authenticate the admin | Public |
+| POST | `/api/auth/logout` | End the current session | Authenticated |
+
+Authentication uses server-side sessions and HTTP cookies.
 
 ### Projects
 
-| Method | Endpoint                   | Description                |
-| ------ | -------------------------- | -------------------------- |
-| GET    | `/api/projects`            | Get all projects           |
-| GET    | `/api/projects/featured`   | Get featured projects      |
-| GET    | `/api/projects/:id`        | Get a project by ID        |
-| GET    | `/api/projects/slug/:slug` | Get a project by slug      |
-| POST   | `/api/projects`            | Create a project           |
-| PATCH  | `/api/projects/:id`        | Partially update a project |
-| DELETE | `/api/projects/:id`        | Delete a project           |
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| GET | `/api/projects` | Get all projects | Public |
+| GET | `/api/projects/featured` | Get featured projects | Public |
+| GET | `/api/projects/slug/:slug` | Get a project by slug | Public |
+| GET | `/api/projects/:id` | Get a project by ID | Public |
+| POST | `/api/projects` | Create a project | Admin |
+| PATCH | `/api/projects/:id` | Partially update a project | Admin |
+| DELETE | `/api/projects/:id` | Delete a project | Admin |
 
-### Get All Projects
+### Project Images
 
-```http
-GET /api/projects
-```
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| GET | `/api/projects/:id/images` | List a project's images | Public |
+| POST | `/api/uploads` | Upload an image to a project | Admin |
+| DELETE | `/api/projects/:projectId/images/:imageId` | Delete a project image | Admin |
+| PATCH | `/api/projects/:projectId/images/:imageId/main` | Set the main project image | Admin |
 
-Returns all projects ordered by creation date.
+Admin-only endpoints require a valid authenticated session and appropriate authorization.
 
-Example response:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "title": "Portfolio API",
-      "slug": "portfolio-api",
-      "description": "A full-stack portfolio application.",
-      "imageUrl": null,
-      "githubUrl": null,
-      "liveUrl": null,
-      "featured": true,
-      "createdAt": "2026-09-19T00:00:00.000Z",
-      "updatedAt": "2026-09-19T00:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Get Featured Projects
-
-```http
-GET /api/projects/featured
-```
-
-Returns only projects where `featured` is set to `true`.
-
-Featured projects are used by the frontend to populate the featured projects section of the portfolio.
-
-### Get Project by ID
-
-```http
-GET /api/projects/:id
-```
-
-Example:
-
-```http
-GET /api/projects/1
-```
-
-Returns a single project matching the provided ID.
-
-Project IDs must be positive integers.
-
-### Get Project by Slug
-
-```http
-GET /api/projects/slug/:slug
-```
-
-Example:
-
-```http
-GET /api/projects/slug/portfolio-api
-```
-
-Example response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "title": "Portfolio API",
-    "slug": "portfolio-api",
-    "description": "A full-stack portfolio application.",
-    "imageUrl": null,
-    "githubUrl": null,
-    "liveUrl": null,
-    "featured": true,
-    "createdAt": "2026-09-19T00:00:00.000Z",
-    "updatedAt": "2026-09-19T00:00:00.000Z"
-  }
-}
-```
-
-The frontend uses slug-based URLs for public project pages:
-
-```text
-/projects/portfolio-api
-```
-
-### Create Project
+### Project Creation Example
 
 ```http
 POST /api/projects
@@ -327,45 +246,25 @@ Request body:
 
 ```json
 {
-  "title": "Portfolio API",
-  "slug": "portfolio-api",
-  "description": "A full-stack portfolio application.",
-  "imageUrl": "https://example.com/image.png",
+  "title": "Portfolio Application",
+  "slug": "portfolio-application",
+  "description": "A full-stack portfolio project.",
   "githubUrl": "https://github.com/example/portfolio",
   "liveUrl": "https://example.com",
   "featured": true
 }
 ```
 
-Required fields:
-
-* `title`
-* `slug`
-* `description`
-
-Optional fields:
-
-* `imageUrl`
-* `githubUrl`
-* `liveUrl`
-* `featured`
-
 The endpoint returns `201 Created` when the project is successfully created.
 
-### Update Project
+### Partial Project Updates
 
-```http
-PATCH /api/projects/:id
-Content-Type: application/json
-```
-
-Example:
+The update endpoint uses `PATCH`, allowing individual fields to be modified without resending the entire project.
 
 ```http
 PATCH /api/projects/1
+Content-Type: application/json
 ```
-
-Request body:
 
 ```json
 {
@@ -373,132 +272,80 @@ Request body:
 }
 ```
 
-Because this endpoint uses `PATCH`, only the fields that need to be changed have to be provided.
+### Image Uploads
 
-For example:
+Images are uploaded using `multipart/form-data`.
 
-```json
-{
-  "title": "Updated Portfolio API",
-  "description": "Updated project description."
-}
-```
+The upload endpoint accepts:
 
-The endpoint returns `200 OK` when the project is successfully updated.
+- `projectId` — the ID of an existing project.
+- `image` — a JPEG, PNG, or WebP image.
 
-### Delete Project
+Uploads are restricted to files no larger than 10 MB and are validated before being stored in Cloudinary.
 
-```http
-DELETE /api/projects/:id
-```
+## Validation and Error Handling
 
-Example:
+Incoming project data is validated using Zod before reaching application logic.
 
-```http
-DELETE /api/projects/1
-```
-
-Deletes the project matching the provided ID.
-
-## Validation
-
-Incoming API data is validated using Zod before reaching the application logic.
-
-### Project Validation
-
-Project titles and descriptions must not be empty.
-
-Project URLs must contain valid URL formats when provided.
+Validation covers project fields, URLs, slugs, and route parameters.
 
 Project slugs must:
 
-* contain lowercase letters, numbers, and hyphens
-* not contain spaces
-* not contain uppercase letters
-* not begin or end with a hyphen
-* not contain consecutive hyphens
+- Use lowercase letters, numbers, and hyphens.
+- Not contain spaces or underscores.
+- Not begin or end with a hyphen.
+- Not contain consecutive hyphens.
 
-Valid example:
+Example of a valid slug:
 
 ```text
 my-project-2026
 ```
 
-Invalid examples:
+Project IDs must be positive integers. Duplicate project slugs return `409 Conflict`, while missing resources return `404 Not Found`.
 
-```text
-My Project
-my_project
--my-project
-my--project
-```
+Centralized Express error-handling middleware converts known database errors into consistent API responses and prevents internal errors from being returned directly to clients.
 
-Project IDs must be positive integers.
+## Authentication and Security
 
-### Duplicate Resources
+The application implements several security controls:
 
-Project slugs are unique.
+- Session-based authentication
+- PostgreSQL-backed session storage
+- Role-based authorization for administrative operations
+- Origin validation for state-changing requests
+- Login rate limiting
+- Zod request validation
+- Image MIME-type and content validation
+- Upload size restrictions
+- HTTP-only session cookies
+- Environment-based configuration for secrets and credentials
 
-Attempting to create or update a project using an existing slug results in a `409 Conflict` response.
-
-## Error Handling
-
-The backend uses centralized Express error-handling middleware.
-
-Known Prisma errors are converted into appropriate API responses.
-
-For example:
-
-```json
-{
-  "success": false,
-  "message": "Project not found"
-}
-```
-
-Validation failures return additional validation details:
-
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": []
-}
-```
-
-This keeps error handling consistent across API endpoints and prevents individual controllers from having to duplicate database error handling logic.
-
-## HTTP Status Codes
-
-| Status | Meaning                               |
-| ------ | ------------------------------------- |
-| `200`  | Successful request                    |
-| `201`  | Resource created                      |
-| `400`  | Invalid request or validation failure |
-| `404`  | Resource not found                    |
-| `409`  | Resource conflict                     |
-| `500`  | Internal server error                 |
+Further production security hardening remains part of the development roadmap.
 
 ## Getting Started
 
 ### Prerequisites
 
-Make sure the following are installed:
+Install the following:
 
-* Node.js
-* npm
-* PostgreSQL
+- Node.js and npm
+- PostgreSQL
+- A Cloudinary account for image uploads
 
 ### Installation
 
-Clone the repository and install the dependencies:
+Clone the repository and install dependencies:
 
 ```bash
 git clone <repository-url>
 cd Portfolio-01
-
 npm install
+```
 
+Install dependencies in each application:
+
+```bash
 cd frontend
 npm install
 
@@ -508,299 +355,187 @@ npm install
 cd ..
 ```
 
-### Environment Variables
+### Environment Configuration
 
-Create a `.env` file inside the `backend` directory.
+Create `backend/.env` and configure the required values:
 
-```env
+```dotenv
 PORT=3000
+NODE_ENV=development
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/portfolio"
+FRONTEND_URL="http://localhost:5173"
+SESSION_SECRET="replace-with-a-long-random-secret"
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="replace-with-a-strong-password"
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
 ```
 
-Replace `USER` and `PASSWORD` with the credentials for your local PostgreSQL installation.
+Replace the placeholders with your local configuration. Use strong, unique credentials and never commit real secrets to source control.
 
-Do not commit `.env` files or database credentials to source control.
+The frontend may also require `VITE_API_BASE_URL` in `frontend/.env`, depending on the API client configuration:
 
-The frontend requires the following environment variable:
-
-```env
+```dotenv
 VITE_API_BASE_URL=http://localhost:3000
-```
-
-This should be placed in:
-
-```text
-frontend/.env
 ```
 
 ### Database Setup
 
-Make sure PostgreSQL is running and the `portfolio` database exists.
+Make sure PostgreSQL is running and the configured database exists.
 
-Run the Prisma migrations:
+Apply the existing Prisma migrations:
 
 ```bash
 cd backend
-npx prisma migrate dev
-```
-
-Generate the Prisma client if necessary:
-
-```bash
+npx prisma migrate deploy
 npx prisma generate
 ```
 
-Return to the project root:
+Return to the repository root:
 
 ```bash
 cd ..
 ```
 
+For a fresh local development database, use the database setup workflow appropriate to your environment.
+
+### Admin Account Setup
+
+Configure `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `backend/.env`, then run the project's seed script from the backend directory:
+
+```bash
+npx prisma db seed
+```
+
+The seed script creates or updates the configured admin account.
+
 ### Running Locally
 
-From the project root:
+From the repository root:
 
 ```bash
 npm run dev
 ```
 
-This starts both the frontend and backend development servers.
+The development setup starts the frontend and backend according to the root npm scripts.
 
-The frontend is available at:
+Default local URLs:
 
-```text
-http://localhost:5173
-```
-
-The backend is available at:
-
-```text
-http://localhost:3000
-```
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+- Health check: `http://localhost:3000/api/health`
 
 ## Testing
 
-Automated testing is planned for a later phase.
+Automated backend tests are implemented using Vitest and Supertest.
 
-Current development testing is performed by manually testing API endpoints and frontend flows.
+From the backend directory:
 
-The current manual test coverage includes:
+```bash
+npm test
+```
 
-* Project CRUD operations
-* Project creation
-* Project updates
-* Project deletion
-* Featured project retrieval
-* Project retrieval by ID
-* Project retrieval by slug
-* Invalid project IDs
-* Invalid slugs
-* Duplicate project slugs
-* Invalid request data
-* API error handling
-* Project list loading
-* Loading states
-* Error states
-* Empty states
-* Project detail navigation
-* Slug-based project retrieval
-* Frontend/backend API integration
+Check TypeScript compilation without generating build files:
 
-Automated unit, integration, and end-to-end testing will be introduced in a later development phase.
+```bash
+npx tsc --noEmit
+```
+
+Postman is used for manual API testing, while frontend flows are verified in the browser.
+
+Testing covers project operations, validation, error handling, authentication, and project image management.
 
 ## Docker
 
-Docker configuration is planned.
+Docker configuration is planned for a later development phase.
 
-The eventual Docker setup will containerize the application and provide a consistent environment for development and deployment.
-
-Planned containerization may include:
-
-* Frontend application
-* Backend API
-* PostgreSQL database
-* Environment configuration
-* Database migrations
+The intended setup will provide consistent application environments and may include the frontend, backend, PostgreSQL, environment configuration, and database migrations.
 
 ## CI/CD
 
-CI/CD is planned for a later phase.
-
-The planned pipeline will eventually automate tasks such as:
-
-* Installing dependencies
-* Running linting
-* Running automated tests
-* Building the frontend
-* Building the backend
-* Validating the application before deployment
+A CI/CD pipeline is planned to automate dependency installation, code checks, automated tests, builds, and deployment validation.
 
 ## Deployment
 
-Production deployment is planned.
+Production deployment remains planned.
 
-The production environment will eventually include:
-
-* Frontend hosting
-* Backend hosting
-* Production PostgreSQL database
-* Environment variable configuration
-* Database migrations
-* HTTPS
-* CI/CD
+The deployment process will include frontend and backend hosting, production database configuration, environment secrets, database migrations, HTTPS, and CI/CD integration.
 
 ## Screenshots
 
-Screenshots will be added after the frontend UI and visual design have been finalized.
+Screenshots will be added after the final UI and visual design have been completed.
 
-## Lessons / Technical Decisions
+## Technical Decisions
 
 ### Layered Backend Architecture
 
-The backend separates routes, controllers, services, and database access.
+Routes, controllers, services, and database access are separated to keep responsibilities clear and improve maintainability and testability.
 
-This keeps HTTP-specific logic out of the service layer and makes individual parts of the application easier to maintain and test.
+### Prisma and PostgreSQL
 
-### Prisma
-
-Prisma provides a type-safe interface for interacting with PostgreSQL and allows the database schema to be represented directly in the application.
-
-Database migrations are managed through Prisma.
+Prisma provides type-safe database access, while PostgreSQL stores project data, user records, and session information.
 
 ### Zod Validation
 
-Zod is used to validate incoming API data before it reaches the application logic.
-
-This prevents invalid request data from being passed directly into database operations.
-
-Validation is also applied to route parameters such as project IDs and slugs.
+Zod validates incoming request data before application logic processes it, reducing the risk of invalid data reaching database operations.
 
 ### Centralized Error Handling
 
-Express error-handling middleware provides a single location for handling unexpected errors and known Prisma errors.
+A shared error handler provides consistent API error responses and prevents controllers from duplicating error-handling logic.
 
-This keeps controllers focused on request handling rather than repeating error-response logic.
+### Session-Based Authentication
 
-### Consistent API Responses
+Server-side sessions support authenticated administrative operations without requiring authentication tokens to be manually managed by frontend components.
 
-API responses follow a consistent structure.
+### Cloudinary Image Storage
 
-Successful responses:
-
-```json
-{
-  "success": true,
-  "data": {}
-}
-```
-
-Error responses:
-
-```json
-{
-  "success": false,
-  "message": "Error message"
-}
-```
-
-This makes the frontend API layer predictable and reduces the amount of response-format handling required by individual pages.
-
-### Slug-Based Project URLs
-
-Project detail pages use slugs in public URLs:
-
-```text
-/projects/my-project
-```
-
-rather than exposing database IDs in the frontend URL.
-
-The database ID remains useful for internal CRUD operations, while the slug provides a more readable public URL.
+Cloudinary stores uploaded image files, while the database maintains their URLs, identifiers, and project associations.
 
 ### Frontend API Layer
 
-Frontend API calls are kept separate from page and component code.
-
-For example:
-
-```ts
-getProjects()
-getFeaturedProjects()
-getProjectBySlug(slug)
-```
-
-These functions hide the underlying HTTP implementation from the UI.
-
-This allows components and pages to focus on presentation, state, and user interaction rather than API URLs and response envelopes.
+API functions are separated from page and component code, keeping HTTP details out of the presentation layer.
 
 ### PATCH for Partial Updates
 
-The project update endpoint uses `PATCH` rather than `PUT` because project updates are designed to be partial.
+The project update endpoint supports partial updates, so clients only need to send fields that have changed.
 
-For example, changing only the `featured` status does not require sending the entire project object:
+### Slug-Based Project URLs
 
-```json
-{
-  "featured": true
-}
-```
-
-This matches the behavior of the backend update schema, which makes every project field optional for update operations.
-
-### Explicit API Routes
-
-The API uses explicit routes for common project operations:
-
-```text
-/api/projects
-/api/projects/featured
-/api/projects/:id
-/api/projects/slug/:slug
-```
-
-Rather than adding query parameters for functionality that is not currently required, the API keeps frequently used operations clear and easy to understand.
-
-More advanced filtering or querying can be introduced later if the application requires it.
+Public project pages use readable URLs such as `/projects/my-project`, while numeric IDs remain available for internal resource management.
 
 ## Development Roadmap
 
 ### Completed
 
-* [x] Project foundation
-* [x] Backend API
-* [x] PostgreSQL integration
-* [x] Prisma integration
-* [x] Frontend API integration
-* [x] React Router integration
-* [x] Project list page
-* [x] Project detail page
-* [x] Slug-based project routing
-* [x] Frontend application structure
-* [x] Loading, error, and empty states
-* [x] Project CRUD operations
-* [x] Featured projects endpoint
-* [x] API validation
-* [x] Centralized error handling
-* [x] API response standardization
-* [x] API documentation
+- [x] Project foundation
+- [x] Backend REST API
+- [x] PostgreSQL and Prisma integration
+- [x] Frontend API integration
+- [x] React Router integration
+- [x] Public project pages
+- [x] Loading, error, and empty states
+- [x] Project CRUD operations
+- [x] Featured projects
+- [x] API validation and centralized error handling
+- [x] Admin authentication and session management
+- [x] Admin project management
+- [x] Cloudinary image uploads and project image management
+- [x] Backend automated testing
+- [x] API and frontend manual verification
 
 ### Planned
 
-* [ ] Authentication
-* [ ] Admin/project management interface
-* [ ] Image uploads
-* [ ] Automated testing
-* [ ] Security hardening
-* [ ] Docker
-* [ ] CI/CD
-* [ ] Production deployment
-* [ ] Full documentation refinement
-* [ ] Final UI beautification
+- [ ] Security and production hardening
+- [ ] Docker and containerization
+- [ ] CI/CD
+- [ ] Production deployment
+- [ ] Final UI refinement
+- [ ] Screenshots
+- [ ] Final documentation improvements
 
 ## Future Goals
 
-The long-term goal of this project is to evolve the portfolio from a simple project showcase into a production-style full-stack application.
+The goal is to evolve this portfolio into a maintainable, production-style full-stack application.
 
-Future development will focus on authentication, administrative project management, media handling, automated testing, security, containerization, CI/CD, and production deployment.
-
-The project will continue to be developed incrementally so that each feature introduces a practical engineering concept rather than being added only for complexity.
+Future work will focus on security, containerization, continuous integration and deployment, production hosting, and final UI refinement while preserving the existing architecture and engineering practices.

@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import { sendError, sendSuccess } from "../utils/response.js";
-import { uploadImage } from "../services/upload.service.js";
+import {
+    uploadImage,
+    deleteUploadedImage,
+} from "../services/upload.service.js";
 import { createProjectImage } from "../services/project.service.js";
 
 export const uploadProjectImage = async (
@@ -19,11 +22,15 @@ export const uploadProjectImage = async (
         return;
     }
 
+    let publicId: string | undefined;
+
     try {
         const result = await uploadImage(
             req.file.buffer,
             req.file.originalname
         );
+
+        publicId = result.public_id;
 
         const projectImage = await createProjectImage(
             projectId,
@@ -37,6 +44,17 @@ export const uploadProjectImage = async (
             publicId: projectImage.publicId,
         });
     } catch (error) {
+        if (publicId) {
+            try {
+                await deleteUploadedImage(publicId);
+            } catch (cleanupError) {
+                console.error(
+                    "Failed to clean up Cloudinary image:",
+                    cleanupError
+                );
+            }
+        }
+
         console.error("Image upload failed:", error);
         sendError(res, "Failed to upload image", 500);
     }

@@ -1,6 +1,10 @@
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 
+if (!process.env.SESSION_SECRET) {
+    throw new Error("SESSION_SECRET must be configured.");
+}
+
 const PgSession = connectPgSimple(session);
 
 export const sessionMiddleware = session({

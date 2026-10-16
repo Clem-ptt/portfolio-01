@@ -13,6 +13,21 @@ import {
 } from "../services/project.service.js";
 import { sendSuccess, sendError } from "../utils/response.js";
 
+const parseId = (value: string | string[] | undefined): number | null => {
+    if (!value) {
+        return null;
+    }
+
+    const id = Number(value);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return null;
+    }
+
+    return id;
+};
+
+
 // #region Project Controllers
 
 export const getProjectsController = async (
@@ -49,15 +64,17 @@ export const getProjectByIdController = async (
     next: NextFunction
 ) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseId(req.params.id);
+        
+        if (id === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
 
         const project = await getProjectById(id);
 
         if (!project) {
-            res.status(404).json({
-                success: false,
-                message: "Project not found",
-            });
+            sendError(res, "Project not found", 404);
             return;
         }
 
@@ -113,7 +130,12 @@ export const updateProjectController = async (
     next: NextFunction
 ) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseId(req.params.id);
+
+        if (id === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
 
         const project = await updateProject(id, req.body);
 
@@ -129,7 +151,12 @@ export const deleteProjectController = async (
     next: NextFunction
 ) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseId(req.params.id);
+
+        if (id === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
 
         const project = await deleteProject(id);
 
@@ -150,7 +177,19 @@ export const getProjectImagesController = async (
     next: NextFunction
 ) => {
     try {
-        const projectId = Number(req.params.id);
+        const projectId = parseId(req.params.id);
+
+        if (projectId === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
+
+        const project = await getProjectById(projectId);
+
+        if (!project) {
+            sendError(res, "Project not found", 404);
+            return;
+        }
 
         const images = await getProjectImages(projectId);
 
@@ -166,8 +205,19 @@ export const deleteProjectImageController = async (
     next: NextFunction
 ) => {
     try {
-        const projectId = Number(req.params.projectId);
-        const imageId = Number(req.params.imageId);
+        const projectId = parseId(req.params.projectId);
+        
+        if (projectId === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
+        
+        const imageId = parseId(req.params.imageId);
+
+        if(imageId === null){
+            sendError(res, "Invalid image ID", 400);
+            return;
+        }
 
         const image = await deleteProjectImage(
             projectId,
@@ -186,13 +236,29 @@ export const setProjectMainImageController = async (
     next: NextFunction
 ) => {
     try {
-        const projectId = Number(req.params.projectId);
-        const imageId = Number(req.params.imageId);
+        const projectId = parseId(req.params.projectId);
+        
+        if (projectId === null) {
+            sendError(res, "Invalid project ID", 400);
+            return;
+        }
+        
+        const imageId = parseId(req.params.imageId);
+
+        if(imageId === null){
+            sendError(res, "Invalid image ID", 400);
+            return;
+        }
 
         const project = await setProjectMainImage(
             projectId,
             imageId
         );
+
+        if (!project) {
+            sendError(res, "Project image not found", 404);
+            return;
+        }
 
         sendSuccess(res, project);
     } catch (error) {

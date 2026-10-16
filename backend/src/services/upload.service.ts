@@ -31,3 +31,52 @@ export const uploadImage = (
         uploadStream.end(buffer);
     });
 };
+
+const wait = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+const deleteImageOnce = (publicId: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.destroy(
+            publicId,
+            { resource_type: "image" },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                if (
+                    result?.result !== "ok" &&
+                    result?.result !== "not found"
+                ) {
+                    reject(
+                        new Error("Cloudinary image deletion failed.")
+                    );
+                    return;
+                }
+
+                resolve();
+            }
+        );
+    });
+};
+
+export const deleteUploadedImage = async (
+    publicId: string
+): Promise<void> => {
+    const maxAttempts = 3;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            await deleteImageOnce(publicId);
+            return;
+        } catch (error) {
+            if (attempt === maxAttempts) {
+                throw error;
+            }
+
+            await wait(500 * attempt);
+        }
+    }
+};

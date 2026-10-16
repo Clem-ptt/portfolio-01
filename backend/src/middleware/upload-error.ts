@@ -10,7 +10,7 @@ export const uploadErrorHandler = (
 ) => {
     if (error instanceof multer.MulterError) {
         if (error.code === "LIMIT_FILE_SIZE") {
-            sendError(res, "Image must not exceed 10 MB", 400);
+            sendError(res, "Image must not exceed 10 MB", 413);
             return;
         }
 
