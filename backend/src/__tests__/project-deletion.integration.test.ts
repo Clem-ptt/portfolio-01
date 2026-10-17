@@ -5,15 +5,10 @@ import app from "../app.js";
 import { prisma } from "../lib/prisma.js";
 import { deleteUploadedImage } from "../services/upload.service.js";
 
-vi.mock("../services/upload.service.js", async (importOriginal) => {
-    const actual =
-        await importOriginal<typeof import("../services/upload.service.js")>();
-
-    return {
-        ...actual,
-        deleteUploadedImage: vi.fn().mockResolvedValue(undefined),
-    };
-});
+vi.mock("../services/upload.service.js", () => ({
+    deleteUploadedImage: vi.fn().mockResolvedValue(undefined),
+    uploadProjectImage: vi.fn(),
+}));
 
 describe("Project deletion integration", () => {
     it("should delete a project and clean up its associated images", async () => {

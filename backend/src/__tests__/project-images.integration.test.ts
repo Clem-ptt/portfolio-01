@@ -4,15 +4,10 @@ import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../lib/prisma.js";
 
-vi.mock("../services/upload.service.js", async (importOriginal) => {
-    const actual =
-        await importOriginal<typeof import("../services/upload.service.js")>();
-
-    return {
-        ...actual,
-        deleteUploadedImage: vi.fn().mockResolvedValue(undefined),
-    };
-});
+vi.mock("../services/upload.service.js", () => ({
+    uploadImage: vi.fn(),
+    deleteUploadedImage: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe("Project image management integration", () => {
     it("should list, select, replace, and clear the main project image", async () => {
