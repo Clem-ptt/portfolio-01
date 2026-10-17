@@ -8,6 +8,8 @@ import { sessionMiddleware } from "./config/session.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.disable("etag");
 
 const frontendOrigin =
