@@ -41,8 +41,36 @@ const AdminProjectsPage = () => {
     }, []);
 
     useEffect(() => {
-        loadProjects();
-    }, [loadProjects]);
+        let cancelled = false;
+
+        const fetchProjects = async () => {
+            try {
+                const data = await getProjects();
+
+                if (!cancelled) {
+                    setProjects(data);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setError(
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to load projects."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        void fetchProjects();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const handleCreate = () => {
         setEditingProject(null);
