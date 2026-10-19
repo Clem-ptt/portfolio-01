@@ -16,7 +16,7 @@ export const sessionMiddleware = session({
 
     store: new PgSession({
         conString: process.env.DATABASE_URL,
-        createTableIfMissing: true,
+        pruneSessionInterval: 60 * 60,
     }),
 
     secret: process.env.SESSION_SECRET!,
