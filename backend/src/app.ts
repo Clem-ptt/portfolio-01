@@ -3,6 +3,7 @@ import cors from "cors";
 import projectRoutes from "./routes/project.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import technologyRoutes from "./routes/technology.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { sessionMiddleware } from "./config/session.js";
 
@@ -66,7 +67,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/uploads", uploadRoutes);
-
+app.use("/api/technologies", technologyRoutes);
 app.use(errorHandler);
 
 export default app;

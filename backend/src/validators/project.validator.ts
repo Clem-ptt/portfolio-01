@@ -9,7 +9,10 @@ const slugSchema = z
     );
 
 export const projectIdSchema = z.object({
-  id: z.coerce.number().int().positive("ID must be a positive integer"),
+    id: z.coerce
+        .number()
+        .int()
+        .positive("ID must be a positive integer"),
 });
 
 export const projectSlugSchema = z.object({
@@ -17,15 +20,16 @@ export const projectSlugSchema = z.object({
 });
 
 export const createProjectSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  slug: slugSchema,
-  description: z.string().min(1, "Description is required"),
+    title: z.string().min(1, "Title is required"),
+    slug: slugSchema,
+    description: z.string().min(1, "Description is required"),
 
-  imageUrl: z.url("Invalid image URL").optional(),
-  githubUrl: z.url("Invalid GitHub URL").optional(),
-  liveUrl: z.url("Invalid live URL").optional(),
+    imageUrl: z.url("Invalid image URL").optional(),
+    githubUrl: z.url("Invalid GitHub URL").optional(),
+    liveUrl: z.url("Invalid live URL").optional(),
 
-  featured: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    technologyIds: z.array(z.number().int().positive()).optional(),
 });
 
 export const updateProjectSchema = createProjectSchema.partial();

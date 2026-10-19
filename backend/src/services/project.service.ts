@@ -1,7 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { deleteUploadedImage } from "./upload.service.js";
 
-
 type CreateProjectData = {
     title: string;
     slug: string;
@@ -10,6 +9,7 @@ type CreateProjectData = {
     githubUrl?: string;
     liveUrl?: string;
     featured?: boolean;
+    technologyIds?: number[];
 };
 
 // #region Project Service
@@ -18,6 +18,9 @@ export const getProjects = async () => {
     return prisma.project.findMany({
         orderBy: {
             createdAt: "desc",
+        },
+        include: {
+            technologies: true,
         },
     });
 };
@@ -30,6 +33,9 @@ export const getFeaturedProjects = async () => {
         orderBy: {
             createdAt: "desc",
         },
+        include: {
+            technologies: true,
+        },
     });
 };
 
@@ -38,18 +44,36 @@ export const getProjectById = async (id: number) => {
         where: {
             id,
         },
+        include: {
+            technologies: true,
+        },
     });
 };
 
 export const getProjectBySlug = async (slug: string) => {
     return prisma.project.findUnique({
         where: { slug },
+        include: {
+            technologies: true,
+        },
     });
 };
 
 export const createProject = async (data: CreateProjectData) => {
+    const { technologyIds, ...projectData } = data;
+
     return prisma.project.create({
-        data,
+        data: {
+            ...projectData,
+            ...(technologyIds !== undefined && {
+                technologies: {
+                    connect: technologyIds.map((id) => ({ id })),
+                },
+            }),
+        },
+        include: {
+            technologies: true,
+        },
     });
 };
 
@@ -57,11 +81,25 @@ export const updateProject = async (
     id: number,
     data: Partial<CreateProjectData>
 ) => {
+    const { technologyIds, ...projectData } = data;
+
     return prisma.project.update({
         where: {
             id,
         },
-        data,
+        data: {
+            ...projectData,
+            ...(technologyIds !== undefined && {
+                technologies: {
+                    set: technologyIds.map((technologyId) => ({
+                        id: technologyId,
+                    })),
+                },
+            }),
+        },
+        include: {
+            technologies: true,
+        },
     });
 };
 

@@ -7,6 +7,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import AdminProjectsPage from "./pages/AdminProjectsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminTechnologiesPage from "./pages/AdminTechnologiesPage";
 
 function App() {
     return (
@@ -43,6 +44,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <AdminProjectsPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/technologies"
+                    element={
+                        <ProtectedRoute>
+                            <AdminTechnologiesPage />
                         </ProtectedRoute>
                     }
                 />

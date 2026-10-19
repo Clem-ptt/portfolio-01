@@ -32,6 +32,27 @@ function ProjectCard({
                 </Link>
             </h2>
 
+            {project.technologies?.length > 0 && (
+                <div className="project-technologies">
+                    {project.technologies.map((technology) => (
+                        <span
+                            key={technology.id}
+                            className="project-technology"
+                            title={technology.name}
+                        >
+                            {technology.iconUrl && (
+                                <img
+                                    src={technology.iconUrl}
+                                    alt=""
+                                    loading="lazy"
+                                />
+                            )}
+                            {technology.name}
+                        </span>
+                    ))}
+                </div>
+            )}
+
             <p>{project.description}</p>
 
             {project.featured && (

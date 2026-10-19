@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getProjectBySlug, getProjectImages } from "../api/projects";
+import {
+    getProjectBySlug,
+    getProjectImages,
+} from "../api/projects";
 import type { Project, ProjectImage } from "../types/project";
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
@@ -15,6 +18,8 @@ function ProjectDetailPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let cancelled = false;
+
         const loadProject = async () => {
             if (!slug) {
                 setError("Project slug is missing.");
@@ -24,22 +29,36 @@ function ProjectDetailPage() {
 
             try {
                 const data = await getProjectBySlug(slug);
+
+                if (cancelled) return;
+
                 setProject(data);
 
                 const projectImages = await getProjectImages(data.id);
+
+                if (cancelled) return;
+
                 setImages(projectImages);
             } catch (error) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError("Failed to load project.");
-                }
+                if (cancelled) return;
+
+                setError(
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to load project."
+                );
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         };
 
-        loadProject();
+        void loadProject();
+
+        return () => {
+            cancelled = true;
+        };
     }, [slug]);
 
     if (loading) {
@@ -83,6 +102,32 @@ function ProjectDetailPage() {
 
                 <h1>{project.title}</h1>
 
+                {project.technologies?.length > 0 && (
+                    <section className="project-detail-technologies">
+                        <h2>Tech Stack</h2>
+
+                        <div className="project-technologies">
+                            {project.technologies.map((technology) => (
+                                <span
+                                    key={technology.id}
+                                    className="project-technology"
+                                    title={technology.name}
+                                >
+                                    {technology.iconUrl && (
+                                        <img
+                                            src={technology.iconUrl}
+                                            alt=""
+                                            loading="lazy"
+                                        />
+                                    )}
+
+                                    {technology.name}
+                                </span>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {project.featured && (
                     <span>Featured</span>
                 )}
@@ -96,6 +141,7 @@ function ProjectDetailPage() {
                                 key={image.id}
                                 src={image.url}
                                 alt={`${project.title} image`}
+                                loading="lazy"
                             />
                         ))}
                     </div>

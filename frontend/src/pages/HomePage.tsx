@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getFeaturedProjects } from "../api/projects";
+import { getTechnologies } from "../api/technologies";
 import type { Project } from "../types/project";
+import type { Technology } from "../types/technology";
 import ProjectCard from "../components/projects/ProjectCard";
 import PageContainer from "../components/layout/PageContainer";
+import TechnologyCard from "../components/technologies/TechnologyCard";
 
 function HomePage() {
     const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [technologies, setTechnologies] = useState<Technology[]>([]);
+
+    const [isProjLoading, setIsProjLoading] = useState(true);
+    const [isTechLoading, setIsTechLoading] = useState(true);
+
+    const [projError, setProjError] = useState<string | null>(null);
+    const [techError, setTechError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadFeaturedProjects = async () => {
@@ -18,13 +26,30 @@ function HomePage() {
                 setProjects(data);
             } catch (error) {
                 console.error(error);
-                setError("Failed to load featured projects.");
+                setProjError("Failed to load featured projects.");
             } finally {
-                setLoading(false);
+                setIsProjLoading(false);
             }
         };
 
         loadFeaturedProjects();
+    }, []);
+
+    useEffect(() => {
+        const loadTechnologies = async () => {
+            try {
+                const data = await getTechnologies();
+
+                setTechnologies(data);
+            } catch (error) {
+                console.error(error);
+                setTechError("Failed to load technologies.");
+            } finally {
+                setIsTechLoading(false);
+            }
+        };
+
+        loadTechnologies();
     }, []);
 
     return (
@@ -56,21 +81,21 @@ function HomePage() {
             <section>
                 <h2>Featured Projects</h2>
 
-                {loading && (
+                {isProjLoading && (
                     <p>Loading featured projects...</p>
                 )}
 
-                {error && (
-                    <p>{error}</p>
+                {projError && (
+                    <p>{projError}</p>
                 )}
 
-                {!loading && !error && projects.length === 0 && (
+                {!isProjLoading && !projError && projects.length === 0 && (
                     <p>No featured projects available.</p>
                 )}
 
-                {!loading && !error && projects.length > 0 && (
+                {!isProjLoading && !projError && projects.length > 0 && (
                     <div className="project-grid">
-                        {projects.map(project => (
+                        {projects.map((project) => (
                             <ProjectCard
                                 key={project.id}
                                 project={project}
@@ -87,14 +112,28 @@ function HomePage() {
             <section>
                 <h2>Technologies</h2>
 
-                <ul>
-                    <li>React</li>
-                    <li>TypeScript</li>
-                    <li>Node.js</li>
-                    <li>Express</li>
-                    <li>PostgreSQL</li>
-                    <li>Prisma</li>
-                </ul>
+                {isTechLoading && (
+                    <p>Loading technologies...</p>
+                )}
+
+                {techError && (
+                    <p>{techError}</p>
+                )}
+
+                {!isTechLoading && !techError && technologies.length === 0 && (
+                    <p>No technologies available.</p>
+                )}
+
+                {!isTechLoading && !techError && technologies.length > 0 && (
+                    <div className="technology-grid">
+                        {technologies.map((tech) => (
+                            <TechnologyCard
+                                key={tech.id}
+                                technology={tech}
+                            />
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section>

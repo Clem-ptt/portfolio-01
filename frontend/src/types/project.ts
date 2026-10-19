@@ -1,3 +1,5 @@
+import type { Technology } from "./technology";
+
 export type Project = {
     id: number;
     title: string;
@@ -10,6 +12,7 @@ export type Project = {
     createdAt: string;
     updatedAt: string;
     images: ProjectImage[];
+    technologies: Technology[];
 };
 
 export type ProjectImage = {

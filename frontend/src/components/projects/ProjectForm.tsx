@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     createProject,
     updateProject,
 } from "../../api/projects";
+import { getTechnologies } from "../../api/technologies";
 import type { CreateProject } from "../../types/createproject";
 import type { Project } from "../../types/project";
+import type { Technology } from "../../types/technology";
 
 type ProjectFormProps = {
     project?: Project;
@@ -25,10 +27,48 @@ const ProjectForm = ({
         githubUrl: project?.githubUrl ?? "",
         liveUrl: project?.liveUrl ?? "",
         featured: project?.featured ?? false,
+        technologyIds: project?.technologies?.map(
+            (technology) => technology.id
+        ) ?? [],
     });
 
+    const [technologies, setTechnologies] = useState<Technology[]>([]);
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoadingTechnologies, setIsLoadingTechnologies] =
+        useState(true);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadTechnologies = async () => {
+            try {
+                const data = await getTechnologies();
+
+                if (!cancelled) {
+                    setTechnologies(data);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setError(
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to load technologies."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoadingTechnologies(false);
+                }
+            }
+        };
+
+        void loadTechnologies();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const handleChange = (
         event: React.ChangeEvent<
@@ -46,6 +86,19 @@ const ProjectForm = ({
         }));
     };
 
+    const handleTechnologyChange = (technologyId: number) => {
+        setForm((current) => {
+            const selectedIds = current.technologyIds ?? [];
+
+            return {
+                ...current,
+                technologyIds: selectedIds.includes(technologyId)
+                    ? selectedIds.filter((id) => id !== technologyId)
+                    : [...selectedIds, technologyId],
+            };
+        });
+    };
+
     const handleSubmit = async (
         event: React.FormEvent<HTMLFormElement>
     ) => {
@@ -55,11 +108,15 @@ const ProjectForm = ({
         setIsSubmitting(true);
 
         try {
-            const formData = {
+            const formData: CreateProject = {
                 ...form,
+                title: form.title.trim(),
+                slug: form.slug.trim(),
+                description: form.description.trim(),
                 imageUrl: form.imageUrl || undefined,
                 githubUrl: form.githubUrl || undefined,
                 liveUrl: form.liveUrl || undefined,
+                technologyIds: form.technologyIds ?? [],
             };
 
             if (project) {
@@ -160,11 +217,40 @@ const ProjectForm = ({
                     </label>
                 </div>
 
-                {error && <p>{error}</p>}
+                <fieldset>
+                    <legend>Technologies</legend>
+
+                    {isLoadingTechnologies ? (
+                        <p>Loading technologies...</p>
+                    ) : technologies.length === 0 ? (
+                        <p>No technologies available.</p>
+                    ) : (
+                        technologies.map((technology) => (
+                            <div key={technology.id}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={(
+                                            form.technologyIds ?? []
+                                        ).includes(technology.id)}
+                                        onChange={() =>
+                                            handleTechnologyChange(
+                                                technology.id
+                                            )
+                                        }
+                                    />
+                                    {technology.name}
+                                </label>
+                            </div>
+                        ))
+                    )}
+                </fieldset>
+
+                {error && <p role="alert">{error}</p>}
 
                 <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoadingTechnologies}
                 >
                     {isSubmitting
                         ? "Saving..."
