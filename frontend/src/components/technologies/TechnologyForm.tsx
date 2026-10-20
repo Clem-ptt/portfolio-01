@@ -84,15 +84,13 @@ const TechnologyForm = ({
     };
 
     return (
-        <section>
-            <h2>
-                {technology
-                    ? "Edit Technology"
-                    : "Create Technology"}
-            </h2>
-
-            <form onSubmit={handleSubmit}>
-                <div>
+        <form
+            id="technology-form"
+            className="technology-form"
+            onSubmit={handleSubmit}
+        >
+            <div className="technology-form-body">
+                <div className="technology-form-field">
                     <label htmlFor="technology-name">
                         Technology Name
                     </label>
@@ -106,7 +104,7 @@ const TechnologyForm = ({
                     />
                 </div>
 
-                <div>
+                <div className="technology-form-field">
                     <label htmlFor="technology-icon-url">
                         Icon URL
                     </label>
@@ -118,22 +116,27 @@ const TechnologyForm = ({
                         onChange={handleChange}
                         placeholder="Paste a Devicon SVG URL"
                     />
+                    <p className="technology-form-hint">
+                        Optional. Use a direct URL to the technology icon.
+                    </p>
                 </div>
 
                 {form.iconUrl && (
-                    <div>
+                    <div className="technology-icon-preview">
                         <p>Icon Preview</p>
-                        <img
-                            src={form.iconUrl}
-                            alt={`${form.name || "Technology"} icon preview`}
-                            width={48}
-                            height={48}
-                            style={{ objectFit: "contain" }}
-                        />
+                        <div className="technology-icon-preview-box">
+                            <img
+                                src={form.iconUrl}
+                                alt={`${form.name || "Technology"} icon preview`}
+                                width={48}
+                                height={48}
+                                style={{ objectFit: "contain" }}
+                            />
+                        </div>
                     </div>
                 )}
 
-                <div>
+                <div className="technology-form-field">
                     <label htmlFor="technology-category">
                         Category
                     </label>
@@ -145,7 +148,10 @@ const TechnologyForm = ({
                         required
                     >
                         {categories.map((category) => (
-                            <option key={category.value} value={category.value}>
+                            <option
+                                key={category.value}
+                                value={category.value}
+                            >
                                 {category.label}
                             </option>
                         ))}
@@ -153,10 +159,27 @@ const TechnologyForm = ({
                 </div>
 
                 {error && (
-                    <p role="alert">{error}</p>
+                    <p
+                        className="admin-form-error"
+                        role="alert"
+                    >
+                        {error}
+                    </p>
                 )}
+            </div>
+
+            <footer className="technology-form-footer">
+                <button
+                    className="admin-secondary-button"
+                    type="button"
+                    onClick={onCancel}
+                    disabled={isSubmitting}
+                >
+                    Cancel
+                </button>
 
                 <button
+                    className="admin-primary-button"
                     type="submit"
                     disabled={isSubmitting}
                 >
@@ -166,16 +189,8 @@ const TechnologyForm = ({
                             ? "Update Technology"
                             : "Create Technology"}
                 </button>
-
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    disabled={isSubmitting}
-                >
-                    Cancel
-                </button>
-            </form>
-        </section>
+            </footer>
+        </form>
     );
 };
 

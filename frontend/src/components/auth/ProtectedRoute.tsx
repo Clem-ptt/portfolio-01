@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { getCurrentUser } from "../../api/auth";
+import LoadingState from "../../components/ui/LoadingState";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -10,26 +11,40 @@ const ProtectedRoute = ({
     children,
 }: ProtectedRouteProps) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] =
-        useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
+        let cancelled = false;
+
         const checkAuth = async () => {
             try {
                 await getCurrentUser();
-                setIsAuthenticated(true);
+
+                if (!cancelled) {
+                    setIsAuthenticated(true);
+                }
             } catch {
-                setIsAuthenticated(false);
+                if (!cancelled) {
+                    setIsAuthenticated(false);
+                }
             } finally {
-                setIsLoading(false);
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
         };
 
-        checkAuth();
+        void checkAuth();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     if (isLoading) {
-        return <p>Checking authentication...</p>;
+        return (
+            <LoadingState message="Checking authentication..." />
+        );
     }
 
     if (!isAuthenticated) {

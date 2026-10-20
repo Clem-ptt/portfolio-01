@@ -5,7 +5,14 @@ type EmptyStateProps = {
 function EmptyState({
     message,
 }: EmptyStateProps) {
-    return <p>{message}</p>;
+    return (
+        <div className="empty-state">
+            <span className="empty-state-icon" aria-hidden="true">
+                —
+            </span>
+            <p>{message}</p>
+        </div>
+    );
 }
 
 export default EmptyState;

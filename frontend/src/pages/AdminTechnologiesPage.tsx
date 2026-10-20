@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import {
     getTechnologies,
@@ -7,6 +6,9 @@ import {
 import type { Technology } from "../types/technology";
 import TechnologyForm from "../components/technologies/TechnologyForm";
 import TechnologyCard from "../components/technologies/TechnologyCard";
+import PageContainer from "../components/layout/PageContainer";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import BackButton from "../components/ui/BackButton";
 
 const AdminTechnologiesPage = () => {
     const [technologies, setTechnologies] = useState<Technology[]>([]);
@@ -16,6 +18,8 @@ const AdminTechnologiesPage = () => {
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [technologyToDelete, setTechnologyToDelete] =
+        useState<Technology | null>(null);
 
     const loadTechnologies = useCallback(async () => {
         try {
@@ -80,103 +84,199 @@ const AdminTechnologiesPage = () => {
         setEditingTechnology(null);
     };
 
-    const handleDelete = async (id: number) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this technology?"
-        );
-
-        if (!confirmed) {
+    const handleDelete = async () => {
+        if (!technologyToDelete) {
             return;
         }
 
+        const technologyId = technologyToDelete.id;
+
         try {
-            setDeletingId(id);
+            setDeletingId(technologyId);
             setError("");
 
-            await deleteTechnology(id);
-            await loadTechnologies();
+            await deleteTechnology(technologyId);
+
+            setTechnologies((current) =>
+                current.filter((technology) => technology.id !== technologyId)
+            );
+
+            setTechnologyToDelete(null);
         } catch (error) {
             setError(
                 error instanceof Error
                     ? error.message
                     : "Failed to delete technology."
             );
+            setTechnologyToDelete(null);
         } finally {
             setDeletingId(null);
         }
     };
 
     if (isLoading) {
-        return <p>Loading technologies...</p>;
+        return (
+            <PageContainer>
+                <div className="admin-state">
+                    <p>Loading technologies...</p>
+                </div>
+            </PageContainer>
+        );
     }
 
     if (error && technologies.length === 0) {
         return (
-            <main>
-                <p role="alert">{error}</p>
-                <button type="button" onClick={() => void loadTechnologies()}>
-                    Retry
-                </button>
-            </main>
+            <PageContainer>
+                <div className="admin-state" role="alert">
+                    <p>{error}</p>
+                    <button
+                        type="button"
+                        onClick={() => void loadTechnologies()}
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </PageContainer>
         );
     }
 
     return (
-        <main>
-            <h1>Technologies</h1>
+        <>
+            <div className="page-back-navigation">
+                <BackButton
+                    label="Back to Dashboard"
+                    to="/admin"
+                />
+            </div>
 
-            <button type="button" onClick={handleCreate}>
-                Create Technology
-            </button>
+            <PageContainer>
+                <main className="admin-technologies-page">
+                    <header className="admin-page-header">
+                        <div>
+                            <p className="section-eyebrow">
+                                PORTFOLIO MANAGEMENT
+                            </p>
+                            <h1>Technologies</h1>
+                            <p className="admin-page-description">
+                                Manage the technologies and tools displayed
+                                throughout your portfolio.
+                            </p>
+                        </div>
 
-            {error && <p role="alert">{error}</p>}
+                        <button
+                            className="admin-primary-button"
+                            type="button"
+                            onClick={handleCreate}
+                        >
+                            <span aria-hidden="true">+</span> Create Technology
+                        </button>
+                    </header>
 
-            {technologies.length === 0 ? (
-                <p>No technologies found.</p>
-            ) : (
-                <ul>
-                    {technologies.map((technology) => (
-                        <li key={technology.id}>
-                            <TechnologyCard
-                                technology={technology}
-                                showAdminActions
-                                onEdit={() => handleEdit(technology)}
-                                onDelete={() => void handleDelete(technology.id)}
-                            />
+                    {error && (
+                        <p className="admin-form-error" role="alert">
+                            {error}
+                        </p>
+                    )}
 
-                            {deletingId === technology.id && (
-                                <p>Deleting...</p>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
+                    <section className="admin-technologies-section">
+                        <div className="admin-list-heading">
+                            <h2>All Technologies</h2>
+                            <span className="admin-count">
+                                {technologies.length}{" "}
+                                {technologies.length === 1
+                                    ? "technology"
+                                    : "technologies"}
+                            </span>
+                        </div>
 
-            {isFormOpen && (
-                <div
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="technology-form-title"
-                >
-                    <div>
-                        <h2 id="technology-form-title">
-                            {editingTechnology
-                                ? "Edit Technology"
-                                : "Create Technology"}
-                        </h2>
+                        {technologies.length === 0 ? (
+                            <div className="admin-empty-state">
+                                <h3>No technologies yet</h3>
+                                <p>
+                                    Add your first technology to showcase the
+                                    tools and skills you work with.
+                                </p>
+                                <button
+                                    className="admin-primary-button"
+                                    type="button"
+                                    onClick={handleCreate}
+                                >
+                                    Create Your First Technology
+                                </button>
+                            </div>
+                        ) : (
+                            <ul className="admin-technology-list">
+                                {technologies.map((technology) => (
+                                    <li key={technology.id}>
+                                        <TechnologyCard
+                                            technology={technology}
+                                            showAdminActions
+                                            onEdit={() => handleEdit(technology)}
+                                            onDelete={() =>
+                                                setTechnologyToDelete(technology)
+                                            }
+                                        />
 
-                        <TechnologyForm
-                            technology={editingTechnology ?? undefined}
-                            onSaved={async () => {
-                                handleCloseForm();
-                                await loadTechnologies();
+                                        {deletingId === technology.id && (
+                                            <p className="admin-inline-status">
+                                                Deleting technology...
+                                            </p>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </section>
+
+                    {isFormOpen && (
+                        <div
+                            className="admin-dialog-backdrop"
+                            role="presentation"
+                        >
+                            <section
+                                className="admin-dialog technology-form-dialog"
+                                role="dialog"
+                                aria-modal="true"
+                                aria-labelledby="technology-form-title"
+                            >
+                                <header className="admin-dialog-header">
+                                    <div>
+                                        <h2 id="technology-form-title">
+                                            {editingTechnology
+                                                ? "Edit Technology"
+                                                : "Create Technology"}
+                                        </h2>
+                                    </div>
+                                </header>
+
+                                <TechnologyForm
+                                    technology={editingTechnology ?? undefined}
+                                    onSaved={async () => {
+                                        handleCloseForm();
+                                        await loadTechnologies();
+                                    }}
+                                    onCancel={handleCloseForm}
+                                />
+                            </section>
+                        </div>
+                    )}
+
+                    {technologyToDelete && (
+                        <ConfirmDialog
+                            title="Delete Technology?"
+                            message={`Are you sure you want to delete "${technologyToDelete.name}"? This action cannot be undone.`}
+                            isLoading={deletingId !== null}
+                            onConfirm={() => void handleDelete()}
+                            onCancel={() => {
+                                if (deletingId === null) {
+                                    setTechnologyToDelete(null);
+                                }
                             }}
-                            onCancel={handleCloseForm}
                         />
-                    </div>
-                </div>
-            )}
-        </main>
+                    )}
+                </main>
+            </PageContainer>
+        </>
     );
 };
 

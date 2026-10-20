@@ -14,34 +14,36 @@ function TechnologyCard({
     onDelete,
 }: TechnologyCardProps) {
     return (
-        <article className="technology-card">
-            {technology.iconUrl ? (
-                <img
-                    className="technology-card-icon"
-                    src={technology.iconUrl}
-                    alt={`${technology.name} icon`}
-                    loading="lazy"
-                />
-            ) : (
-                <div
-                    className="technology-card-icon-placeholder"
-                    aria-hidden="true"
-                >
-                    {technology.name.charAt(0).toUpperCase()}
+        <article className="admin-technology-card">
+            <div className="admin-technology-card-main">
+                {technology.iconUrl ? (
+                    <img
+                        className="admin-technology-icon"
+                        src={technology.iconUrl}
+                        alt={`${technology.name} icon`}
+                        loading="lazy"
+                    />
+                ) : (
+                    <div
+                        className="admin-technology-icon-placeholder"
+                        aria-hidden="true"
+                    >
+                        {technology.name.charAt(0).toUpperCase()}
+                    </div>
+                )}
+
+                <div className="admin-technology-info">
+                    <h3>{technology.name}</h3>
+                    <span className="admin-technology-category">
+                        {technology.category}
+                    </span>
                 </div>
-            )}
-
-            <h2 className="technology-card-name">
-                {technology.name}
-            </h2>
-
-            <span className="technology-card-category">
-                {technology.category}
-            </span>
+            </div>
 
             {showAdminActions && (
-                <div className="technology-card-actions">
+                <div className="admin-technology-actions">
                     <button
+                        className="admin-secondary-button"
                         type="button"
                         onClick={onEdit}
                     >
@@ -49,6 +51,7 @@ function TechnologyCard({
                     </button>
 
                     <button
+                        className="admin-danger-outline-button"
                         type="button"
                         onClick={onDelete}
                     >

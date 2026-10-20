@@ -6,77 +6,143 @@ import {
     setProjectMainImage,
 } from "../../api/projects";
 import type { Project, ProjectImage } from "../../types/project";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import Toast from "../ui/Toast";
 
 type ProjectImageManagerProps = {
     project: Project;
     onClose: () => void;
+    onProjectUpdated: (updatedProject: Project) => void;
 };
 
 const ProjectImageManager = ({
     project,
     onClose,
+    onProjectUpdated,
 }: ProjectImageManagerProps) => {
     const [images, setImages] = useState<ProjectImage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
-    const [deletingImageId, setDeletingImageId] =
-        useState<number | null>(null);
+    const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
     const [error, setError] = useState("");
-    const [settingMainImageId, setSettingMainImageId] =
-        useState<number | null>(null);
-    const [mainImageUrl, setMainImageUrl] = 
-        useState(project.imageUrl);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [settingMainImageId, setSettingMainImageId] = useState<number | null>(null);
+    const [mainImageUrl, setMainImageUrl] = useState(project.imageUrl);
+    const [imageToDelete, setImageToDelete] = useState<number | null>(null);
+    const [toast, setToast] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>(null);
 
     useEffect(() => {
+        let cancelled = false;
+
         const loadImages = async () => {
             try {
                 setError("");
-
                 const data = await getProjectImages(project.id);
-                setImages(data);
+
+                if (!cancelled) {
+                    setImages(data);
+                }
             } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to load project images."
-                );
+                if (!cancelled) {
+                    setError(
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to load project images."
+                    );
+                }
             } finally {
-                setIsLoading(false);
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
         };
 
-        loadImages();
+        void loadImages();
+
+        return () => {
+            cancelled = true;
+        };
     }, [project.id]);
 
-    const handleDelete = async (imageId: number) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this image?"
-        );
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                if (imageToDelete !== null) {
+                    setImageToDelete(null);
+                    return;
+                }
 
-        if (!confirmed) {
+                onClose();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [imageToDelete, onClose]);
+
+    const handleDelete = async () => {
+        if (imageToDelete === null) {
             return;
         }
+
+        const imageId = imageToDelete;
+        const deletedImage = images.find((image) => image.id === imageId);
 
         try {
             setDeletingImageId(imageId);
             setError("");
+            setSuccessMessage("");
+            setToast(null);
 
-            await deleteProjectImage(
-                project.id,
-                imageId
+            await deleteProjectImage(project.id, imageId);
+
+            const remainingImages = images.filter(
+                (image) => image.id !== imageId
             );
 
-            setImages((current) =>
-                current.filter(
-                    (image) => image.id !== imageId
-                )
-            );
+            setImages(remainingImages);
+
+            if (deletedImage?.url === mainImageUrl) {
+                const replacementImage = remainingImages[0];
+                const replacementUrl = replacementImage?.url ?? null;
+
+                setMainImageUrl(replacementUrl);
+
+                onProjectUpdated({
+                    ...project,
+                    imageUrl: replacementUrl,
+                });
+
+                setToast({
+                    type: "success",
+                    message: replacementImage
+                        ? "Main image deleted. A replacement image is now displayed."
+                        : "Main image deleted. No images remain for this project.",
+                });
+            } else {
+                setToast({
+                    type: "success",
+                    message: "Image deleted successfully.",
+                });
+            }
+
+            setImageToDelete(null);
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to delete image."
-            );
+            setToast({
+                type: "error",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to delete image.",
+            });
+
+            setImageToDelete(null);
         } finally {
             setDeletingImageId(null);
         }
@@ -94,16 +160,11 @@ const ProjectImageManager = ({
         try {
             setIsUploading(true);
             setError("");
+            setSuccessMessage("");
 
-            const image = await uploadProjectImage(
-                project.id,
-                file
-            );
+            const image = await uploadProjectImage(project.id, file);
 
-            setImages((current) => [
-                ...current,
-                image,
-            ]);
+            setImages((current) => [...current, image]);
         } catch (error) {
             setError(
                 error instanceof Error
@@ -120,6 +181,8 @@ const ProjectImageManager = ({
         try {
             setSettingMainImageId(imageId);
             setError("");
+            setSuccessMessage("");
+            setToast(null);
 
             const updatedProject = await setProjectMainImage(
                 project.id,
@@ -127,104 +190,187 @@ const ProjectImageManager = ({
             );
 
             setMainImageUrl(updatedProject.imageUrl);
+            onProjectUpdated(updatedProject);
+
+            setToast({
+                type: "success",
+                message: "Main image updated successfully.",
+            });
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to set main image."
-            );
+            setToast({
+                type: "error",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to set main image.",
+            });
         } finally {
             setSettingMainImageId(null);
         }
     };
 
     return (
-        <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="project-image-manager-title"
-        >
-            <div>
-                <h2 id="project-image-manager-title">
-                    {project.title} Images
-                </h2>
-
-                {isLoading && (
-                    <p>Loading images...</p>
-                )}
-
-                {error && <p>{error}</p>}
-
-                {!isLoading && images.length === 0 && (
-                    <p>No images uploaded.</p>
-                )}
-
-                <div>
-                    <label htmlFor="project-image">
-                        Add Image
-                    </label>
-
-                    <input
-                        id="project-image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleUpload}
-                        disabled={isUploading}
-                    />
-
-                    {isUploading && <p>Uploading...</p>}
-                </div>
-
-                {!isLoading && images.length > 0 && (
-                    <div>
-                        {images.map((image) => (
-                            <div key={image.id}>
-                                <img
-                                    src={image.url}
-                                    alt={`${project.title} image`}
-                                    width="150"
-                                />
-
-                                {image.url === mainImageUrl ? (
-                                    <span>Main Image</span>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleSetMainImage(image.id)}
-                                        disabled={settingMainImageId === image.id}
-                                    >
-                                        {settingMainImageId === image.id
-                                            ? "Setting..."
-                                            : "Set as Main"}
-                                    </button>
-                                )}
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        handleDelete(image.id)
-                                    }
-                                    disabled={
-                                        deletingImageId === image.id
-                                    }
-                                >
-                                    {deletingImageId === image.id
-                                        ? "Deleting..."
-                                        : "Delete"}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <button
-                    type="button"
-                    onClick={onClose}
+        <>
+            <div
+                className="admin-dialog-backdrop"
+                role="presentation"
+            >
+                <section
+                    className="admin-dialog image-manager-dialog"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="project-image-manager-title"
                 >
-                    Close
-                </button>
+                    <header className="admin-dialog-header">
+                        <div>
+                            <h2 id="project-image-manager-title">
+                                Manage Images
+                            </h2>
+                            <p className="image-manager-project-title">
+                                {project.title}
+                            </p>
+                        </div>
+                    </header>
+
+                    {error && (
+                        <p className="admin-form-error" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    {successMessage && (
+                        <p className="admin-form-success" role="status">
+                            {successMessage}
+                        </p>
+                    )}
+
+                    <section className="image-gallery-section">
+                        <h3>Project Gallery</h3>
+
+                        {isLoading && <p>Loading images...</p>}
+
+                        {!isLoading && images.length === 0 && (
+                            <div className="admin-empty-state">
+                                <p>No images uploaded yet.</p>
+                            </div>
+                        )}
+
+                        {!isLoading && images.length > 0 && (
+                            <div className="image-manager-grid">
+                                {images.map((image) => {
+                                    const isMainImage =
+                                        image.url === mainImageUrl;
+
+                                    return (
+                                        <article
+                                            className="image-manager-card"
+                                            key={image.id}
+                                        >
+                                            <img
+                                                className="image-manager-preview"
+                                                src={image.url}
+                                                alt={`${project.title} project screenshot`}
+                                                loading="lazy"
+                                            />
+
+                                            <div className="image-manager-card-content">
+                                                {isMainImage ? (
+                                                    <span className="image-main-badge">
+                                                        Main Image
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        className="image-manager-button"
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleSetMainImage(image.id)
+                                                        }
+                                                        disabled={
+                                                            settingMainImageId !== null ||
+                                                            deletingImageId !== null ||
+                                                            imageToDelete !== null
+                                                        }
+                                                    >
+                                                        {settingMainImageId === image.id
+                                                            ? "Setting..."
+                                                            : "Set as Main"}
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    className="image-manager-button image-delete-button"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setImageToDelete(image.id)
+                                                    }
+                                                    disabled={
+                                                        deletingImageId !== null ||
+                                                        settingMainImageId !== null ||
+                                                        imageToDelete !== null
+                                                    }
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+
+                    <footer className="image-manager-footer">
+                        <label
+                            className={`image-upload-button${isUploading ? " is-uploading" : ""}`}
+                        >
+                            {isUploading ? "Uploading..." : "Upload Image"}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleUpload}
+                                disabled={
+                                    isUploading ||
+                                    deletingImageId !== null ||
+                                    settingMainImageId !== null ||
+                                    imageToDelete !== null
+                                }
+                            />
+                        </label>
+
+                        <button
+                            className="admin-secondary-button"
+                            type="button"
+                            onClick={onClose}
+                            disabled={imageToDelete !== null}
+                        >
+                            Close
+                        </button>
+                    </footer>
+                </section>
             </div>
-        </div>
+
+            {imageToDelete !== null && (
+                <ConfirmDialog
+                    title="Delete Image?"
+                    message="Are you sure you want to delete this image? If it is the main image, the next available image will become the main image."
+                    isLoading={deletingImageId !== null}
+                    onConfirm={() => void handleDelete()}
+                    onCancel={() => {
+                        if (deletingImageId === null) {
+                            setImageToDelete(null);
+                        }
+                    }}
+                />
+            )}
+
+            {toast && (
+                <Toast
+                    type={toast.type}
+                    message={toast.message}
+                    onClose={() => setToast(null)}
+                />
+            )}
+        </>
     );
 };
 

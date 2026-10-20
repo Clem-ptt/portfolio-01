@@ -1,13 +1,35 @@
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 
+type Theme = "light" | "dark";
+
 function MainLayout() {
+    const location = useLocation();
+    const [theme, setTheme] = useState<Theme>(() => {
+        const savedTheme = localStorage.getItem("theme");
+        return savedTheme === "dark" ? "dark" : "light";
+    });
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme((currentTheme) =>
+            currentTheme === "light" ? "dark" : "light"
+        );
+    };
+
     return (
         <>
-            <Navbar />
+            <Navbar theme={theme} onToggleTheme={toggleTheme} />
 
             <main>
-                <Outlet />
+                <div key={location.pathname} className="page-transition">
+                    <Outlet />
+                </div>
             </main>
         </>
     );

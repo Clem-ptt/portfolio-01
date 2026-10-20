@@ -8,11 +8,18 @@ function ErrorState({
     onRetry,
 }: ErrorStateProps) {
     return (
-        <div>
+        <div className="error-state" role="alert">
+            <span className="error-state-icon" aria-hidden="true">
+                !
+            </span>
             <p>{message}</p>
 
             {onRetry && (
-                <button onClick={onRetry}>
+                <button
+                    className="error-state-button"
+                    type="button"
+                    onClick={onRetry}
+                >
                     Try Again
                 </button>
             )}

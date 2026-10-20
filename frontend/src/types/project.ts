@@ -15,8 +15,22 @@ export type Project = {
     technologies: Technology[];
 };
 
+export type CreateProject = {
+    title: string;
+    slug: string;
+    description: string;
+    imageUrl?: string;
+    githubUrl?: string;
+    liveUrl?: string;
+    featured?: boolean;
+    technologyIds?: number[];
+};
+
+export type UpdateProject = Partial<CreateProject>;
+
 export type ProjectImage = {
     id: number;
     url: string;
     publicId: string;
 };
+

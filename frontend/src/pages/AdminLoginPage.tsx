@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
+import PageContainer from "../components/layout/PageContainer";
 
 const AdminLoginPage = () => {
     const navigate = useNavigate();
@@ -35,45 +36,83 @@ const AdminLoginPage = () => {
     };
 
     return (
-        <main>
-            <h1>Admin Login</h1>
-
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) =>
-                            setEmail(event.target.value)
-                        }
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) =>
-                            setPassword(event.target.value)
-                        }
-                        required
-                    />
-                </div>
-
-                {error && <p>{error}</p>}
-
-                <button
-                    type="submit"
-                    disabled={isLoading}
+        <main className="admin-login-page">
+            <PageContainer>
+                <section
+                    className="admin-login-card"
+                    aria-labelledby="admin-login-title"
                 >
-                    {isLoading ? "Logging in..." : "Login"}
-                </button>
-            </form>
+                    <div className="admin-login-heading">
+                        <span className="section-eyebrow">
+                            Restricted Access
+                        </span>
+                        <h1 id="admin-login-title">Admin Login</h1>
+                        <p>
+                            Sign in to manage your projects and technologies.
+                        </p>
+                    </div>
+
+                    <form
+                        className="admin-login-form"
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="admin-login-field">
+                            <label htmlFor="email">Email Address</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="username"
+                                placeholder="admin@example.com"
+                                value={email}
+                                onChange={(event) =>
+                                    setEmail(event.target.value)
+                                }
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="admin-login-field">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="current-password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(event) =>
+                                    setPassword(event.target.value)
+                                }
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        {error && (
+                            <p className="admin-login-error" role="alert">
+                                {error}
+                            </p>
+                        )}
+
+                        <button
+                            className="admin-login-submit"
+                            type="submit"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Logging in..." : "Sign In"}
+                            {!isLoading && (
+                                <span aria-hidden="true">→</span>
+                            )}
+                        </button>
+                    </form>
+
+                    <p className="admin-login-footer">
+                        Authorized administrators only.
+                    </p>
+                </section>
+            </PageContainer>
         </main>
     );
 };

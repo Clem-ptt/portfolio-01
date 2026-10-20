@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Project } from "../../types/project";
+import ProjectImagePlaceholder from "./ProjectImagePlaceholder";
 
 type ProjectCardProps = {
     project: Project;
@@ -9,27 +10,39 @@ type ProjectCardProps = {
     onManageImages?: () => void;
 };
 
-function ProjectCard({ 
-    project, 
-    showAdminActions = false, 
-    onEdit, 
+function ProjectCard({
+    project,
+    showAdminActions = false,
+    onEdit,
     onDelete,
-    onManageImages
+    onManageImages,
 }: ProjectCardProps) {
     return (
         <article className="project-card">
-            {project.imageUrl && (
+            {project.imageUrl ? (
                 <img
                     className="project-card-image"
                     src={project.imageUrl}
                     alt={project.title}
                 />
+            ) : (
+                <ProjectImagePlaceholder className="project-card-image" />
             )}
 
-            <h2>
+            <h2 className="project-card-title">
                 <Link to={`/projects/${project.slug}`}>
                     {project.title}
                 </Link>
+
+                {project.featured && (
+                    <span
+                        className="project-featured-star"
+                        title="Featured project"
+                        aria-label="Featured project"
+                    >
+                        ★
+                    </span>
+                )}
             </h2>
 
             {project.technologies?.length > 0 && (
@@ -55,10 +68,6 @@ function ProjectCard({
 
             <p>{project.description}</p>
 
-            {project.featured && (
-                <span>Featured</span>
-            )}
-
             <div className="project-card-links">
                 {project.githubUrl && (
                     <a
@@ -82,24 +91,15 @@ function ProjectCard({
 
                 {showAdminActions && (
                     <div>
-                        <button
-                            type="button"
-                            onClick={onEdit}
-                        >
+                        <button type="button" onClick={onEdit}>
                             Edit
                         </button>
 
-                        <button
-                            type="button"
-                            onClick={onDelete}
-                        >
+                        <button type="button" onClick={onDelete}>
                             Delete
                         </button>
 
-                        <button
-                            type="button"
-                            onClick={onManageImages}
-                        >
+                        <button type="button" onClick={onManageImages}>
                             Images
                         </button>
                     </div>

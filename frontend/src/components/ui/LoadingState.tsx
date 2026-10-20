@@ -5,7 +5,15 @@ type LoadingStateProps = {
 function LoadingState({
     message = "Loading...",
 }: LoadingStateProps) {
-    return <p>{message}</p>;
+    return (
+        <div className="loading-state" role="status">
+            <span
+                className="loading-state-spinner"
+                aria-hidden="true"
+            />
+            <p>{message}</p>
+        </div>
+    );
 }
 
 export default LoadingState;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
     getProjectBySlug,
     getProjectImages,
@@ -8,6 +8,8 @@ import type { Project, ProjectImage } from "../types/project";
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import PageContainer from "../components/layout/PageContainer";
+import ProjectImagePlaceholder from "../components/projects/ProjectImagePlaceholder";
+import BackButton from "../components/ui/BackButton";
 
 function ProjectDetailPage() {
     const { slug } = useParams<{ slug: string }>();
@@ -86,90 +88,105 @@ function ProjectDetailPage() {
     }
 
     return (
-        <PageContainer>
-            <Link to="/projects">
-                ← Back to Projects
-            </Link>
+        <>
+            <div className="page-back-navigation">
+                <BackButton
+                    label="Back to Projects"
+                    to="/projects"
+                />
+            </div>
 
-            <article className="project-detail">
-                {project.imageUrl && (
-                    <img
-                        className="project-detail-image"
-                        src={project.imageUrl}
-                        alt={project.title}
-                    />
-                )}
+            <PageContainer>
+                <article className="project-detail">
+                    {project.imageUrl ? (
+                        <img
+                            className="project-detail-image"
+                            src={project.imageUrl}
+                            alt={project.title}
+                        />
+                    ) : (
+                        <ProjectImagePlaceholder className="project-detail-image" />
+                    )}
 
-                <h1>{project.title}</h1>
+                    <div className="project-detail-heading">
+                        <h1>{project.title}</h1>
 
-                {project.technologies?.length > 0 && (
-                    <section className="project-detail-technologies">
-                        <h2>Tech Stack</h2>
+                        {project.featured && (
+                            <span
+                                className="project-featured-star"
+                                title="Featured project"
+                                aria-label="Featured project"
+                            >
+                                ★
+                            </span>
+                        )}
+                    </div>
 
-                        <div className="project-technologies">
-                            {project.technologies.map((technology) => (
-                                <span
-                                    key={technology.id}
-                                    className="project-technology"
-                                    title={technology.name}
-                                >
-                                    {technology.iconUrl && (
-                                        <img
-                                            src={technology.iconUrl}
-                                            alt=""
-                                            loading="lazy"
-                                        />
-                                    )}
+                    <p>{project.description}</p>
 
-                                    {technology.name}
-                                </span>
+                    {project.technologies?.length > 0 && (
+                        <section className="project-detail-technologies">
+                            <h2>Tech Stack</h2>
+
+                            <div className="project-technologies">
+                                {project.technologies.map((technology) => (
+                                    <span
+                                        key={technology.id}
+                                        className="project-technology"
+                                        title={technology.name}
+                                    >
+                                        {technology.iconUrl && (
+                                            <img
+                                                src={technology.iconUrl}
+                                                alt=""
+                                                loading="lazy"
+                                            />
+                                        )}
+
+                                        {technology.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {images.length > 0 && (
+                        <div className="project-detail-images">
+                            {images.map((image) => (
+                                <img
+                                    key={image.id}
+                                    src={image.url}
+                                    alt={`${project.title} image`}
+                                    loading="lazy"
+                                />
                             ))}
                         </div>
-                    </section>
-                )}
+                    )}
 
-                {project.featured && (
-                    <span>Featured</span>
-                )}
+                    <div className="project-detail-links">
+                        {project.githubUrl && (
+                            <a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                GitHub
+                            </a>
+                        )}
 
-                <p>{project.description}</p>
-
-                {images.length > 0 && (
-                    <div className="project-detail-images">
-                        {images.map((image) => (
-                            <img
-                                key={image.id}
-                                src={image.url}
-                                alt={`${project.title} image`}
-                                loading="lazy"
-                            />
-                        ))}
+                        {project.liveUrl && (
+                            <a
+                                href={project.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Live Demo
+                            </a>
+                        )}
                     </div>
-                )}
-
-                <div className="project-detail-links">
-                    {project.githubUrl && (
-                        <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            GitHub
-                        </a>
-                    )}
-
-                    {project.liveUrl && (
-                        <a
-                            href={project.liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Live Demo
-                        </a>
-                    )}
-                </div>
-            </article>
-        </PageContainer>
+                </article>
+            </PageContainer>
+        </>
     );
 }
 

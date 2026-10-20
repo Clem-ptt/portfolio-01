@@ -4,7 +4,7 @@ import {
     updateProject,
 } from "../../api/projects";
 import { getTechnologies } from "../../api/technologies";
-import type { CreateProject } from "../../types/createproject";
+import type { CreateProject } from "../../types/project";
 import type { Project } from "../../types/project";
 import type { Technology } from "../../types/technology";
 
@@ -27,9 +27,10 @@ const ProjectForm = ({
         githubUrl: project?.githubUrl ?? "",
         liveUrl: project?.liveUrl ?? "",
         featured: project?.featured ?? false,
-        technologyIds: project?.technologies?.map(
-            (technology) => technology.id
-        ) ?? [],
+        technologyIds:
+            project?.technologies?.map(
+                (technology) => technology.id
+            ) ?? [],
     });
 
     const [technologies, setTechnologies] = useState<Technology[]>([]);
@@ -138,96 +139,118 @@ const ProjectForm = ({
     };
 
     return (
-        <section>
-            <h2>
-                {project ? "Edit Project" : "Create Project"}
-            </h2>
+        <section className="project-form">
+            <form
+                id="project-form"
+                onSubmit={handleSubmit}
+                className="project-form-body"
+            >
+                <div className="project-form-grid">
+                    <div className="project-form-field">
+                        <label htmlFor="title">Project Title</label>
+                        <input
+                            id="title"
+                            name="title"
+                            value={form.title}
+                            onChange={handleChange}
+                            placeholder="e.g. Portfolio Website"
+                            required
+                        />
+                    </div>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="title">Title</label>
-                    <input
-                        id="title"
-                        name="title"
-                        value={form.title}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="project-form-field">
+                        <label htmlFor="slug">URL Slug</label>
+                        <input
+                            id="slug"
+                            name="slug"
+                            value={form.slug}
+                            onChange={handleChange}
+                            placeholder="e.g. portfolio-website"
+                            required
+                        />
+                        <span className="project-form-hint">
+                            Used in the project's public URL.
+                        </span>
+                    </div>
+
+                    <div className="project-form-field project-form-field-full">
+                        <label htmlFor="description">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={form.description}
+                            onChange={handleChange}
+                            placeholder="Describe the project, its purpose, and what you built."
+                            rows={5}
+                            required
+                        />
+                    </div>
+
+                    <div className="project-form-field">
+                        <label htmlFor="githubUrl">GitHub URL</label>
+                        <input
+                            id="githubUrl"
+                            name="githubUrl"
+                            type="url"
+                            value={form.githubUrl}
+                            onChange={handleChange}
+                            placeholder="https://github.com/..."
+                        />
+                    </div>
+
+                    <div className="project-form-field">
+                        <label htmlFor="liveUrl">Live Demo URL</label>
+                        <input
+                            id="liveUrl"
+                            name="liveUrl"
+                            type="url"
+                            value={form.liveUrl}
+                            onChange={handleChange}
+                            placeholder="https://..."
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label htmlFor="slug">Slug</label>
-                    <input
-                        id="slug"
-                        name="slug"
-                        value={form.slug}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="description">
-                        Description
-                    </label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="githubUrl">
-                        GitHub URL
-                    </label>
-                    <input
-                        id="githubUrl"
-                        name="githubUrl"
-                        type="url"
-                        value={form.githubUrl}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="liveUrl">
-                        Live URL
-                    </label>
-                    <input
-                        id="liveUrl"
-                        name="liveUrl"
-                        type="url"
-                        value={form.liveUrl}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div>
-                    <label>
+                <fieldset className="project-form-featured">
+                    <legend>Project Visibility</legend>
+                    <label className="project-form-checkbox">
                         <input
                             name="featured"
                             type="checkbox"
                             checked={form.featured}
                             onChange={handleChange}
                         />
-                        Featured
+                        <span>
+                            <strong>Featured project</strong>
+                            <small>
+                                Highlight this project on the homepage.
+                            </small>
+                        </span>
                     </label>
-                </div>
+                </fieldset>
 
-                <fieldset>
+                <fieldset className="project-form-technologies">
                     <legend>Technologies</legend>
+                    <p className="project-form-section-hint">
+                        Select the technologies used in this project.
+                    </p>
 
                     {isLoadingTechnologies ? (
-                        <p>Loading technologies...</p>
+                        <p className="project-form-status">
+                            Loading technologies...
+                        </p>
                     ) : technologies.length === 0 ? (
-                        <p>No technologies available.</p>
+                        <p className="project-form-status">
+                            No technologies available. Add technologies
+                            from the admin Technologies page first.
+                        </p>
                     ) : (
-                        technologies.map((technology) => (
-                            <div key={technology.id}>
-                                <label>
+                        <div className="project-form-technology-list">
+                            {technologies.map((technology) => (
+                                <label
+                                    className="project-form-technology-option"
+                                    key={technology.id}
+                                >
                                     <input
                                         type="checkbox"
                                         checked={(
@@ -239,34 +262,43 @@ const ProjectForm = ({
                                             )
                                         }
                                     />
-                                    {technology.name}
+                                    <span>{technology.name}</span>
                                 </label>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
                 </fieldset>
 
-                {error && <p role="alert">{error}</p>}
+                {error && (
+                    <p className="project-form-error" role="alert">
+                        {error}
+                    </p>
+                )}
+            </form>
 
+            <footer className="project-form-footer">
                 <button
-                    type="submit"
-                    disabled={isSubmitting || isLoadingTechnologies}
-                >
-                    {isSubmitting
-                        ? "Saving..."
-                        : project
-                            ? "Update Project"
-                            : "Create Project"}
-                </button>
-
-                <button
+                    className="project-form-cancel"
                     type="button"
                     onClick={onCancel}
                     disabled={isSubmitting}
                 >
                     Cancel
                 </button>
-            </form>
+
+                <button
+                    className="project-form-submit"
+                    type="submit"
+                    form="project-form"
+                    disabled={isSubmitting || isLoadingTechnologies}
+                >
+                    {isSubmitting
+                        ? "Saving..."
+                        : project
+                            ? "Save Changes"
+                            : "Create Project"}
+                </button>
+            </footer>
         </section>
     );
 };

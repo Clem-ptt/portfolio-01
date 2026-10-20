@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { getProjects } from "../api/projects";
 import type { Project } from "../types/project";
@@ -18,16 +19,14 @@ function ProjectsPage() {
             setError(null);
 
             const data = await getProjects();
-
             setProjects(data);
         } catch (error) {
             console.error(error);
-
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError("Failed to load projects.");
-            }
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load projects."
+            );
         } finally {
             setLoading(false);
         }
@@ -69,43 +68,45 @@ function ProjectsPage() {
 
     if (loading) {
         return (
-            <PageContainer>
-                <h1>Projects</h1>
-
-                <LoadingState message="Loading projects..." />
+            <PageContainer className="projects-page">
+                <section>
+                    <h1>Projects</h1>
+                    <LoadingState message="Loading projects..." />
+                </section>
             </PageContainer>
         );
     }
 
     if (error) {
         return (
-            <PageContainer>
-                <h1>Projects</h1>
-                <ErrorState
-                    message={error}
-                    onRetry={loadProjects}
-                />
+            <PageContainer className="projects-page">
+                <section>
+                    <h1>Projects</h1>
+                    <ErrorState
+                        message={error}
+                        onRetry={loadProjects}
+                    />
+                </section>
             </PageContainer>
         );
     }
 
     return (
-        <PageContainer>
-            <section>
+        <PageContainer className="projects-page">
+            <section className="projects-page-header">
                 <h1>Projects</h1>
-
                 <p>
                     A collection of applications and projects
                     I've built while developing my skills.
                 </p>
             </section>
 
-            <section>
+            <section className="projects-page-list">
                 {projects.length === 0 ? (
                     <EmptyState message="No projects available." />
                 ) : (
                     <div className="project-grid">
-                        {projects.map(project => (
+                        {projects.map((project) => (
                             <ProjectCard
                                 key={project.id}
                                 project={project}

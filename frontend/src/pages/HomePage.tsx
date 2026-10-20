@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { getFeaturedProjects } from "../api/projects";
 import { getTechnologies } from "../api/technologies";
 import type { Project } from "../types/project";
 import type { Technology } from "../types/technology";
+import type { ContactForm } from "../types/contactform";
 import ProjectCard from "../components/projects/ProjectCard";
 import PageContainer from "../components/layout/PageContainer";
 import TechnologyCard from "../components/technologies/TechnologyCard";
+import Toast, { type ToastType } from "../components/ui/Toast";
 
 function HomePage() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -18,11 +20,23 @@ function HomePage() {
     const [projError, setProjError] = useState<string | null>(null);
     const [techError, setTechError] = useState<string | null>(null);
 
+    const [contactForm, setContactForm] = useState<ContactForm>({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+    });
+
+    const [contactError, setContactError] = useState("");
+    const [toast, setToast] = useState<{
+        type: ToastType;
+        message: string;
+    } | null>(null);
+
     useEffect(() => {
         const loadFeaturedProjects = async () => {
             try {
                 const data = await getFeaturedProjects();
-
                 setProjects(data);
             } catch (error) {
                 console.error(error);
@@ -39,7 +53,6 @@ function HomePage() {
         const loadTechnologies = async () => {
             try {
                 const data = await getTechnologies();
-
                 setTechnologies(data);
             } catch (error) {
                 console.error(error);
@@ -52,42 +65,75 @@ function HomePage() {
         loadTechnologies();
     }, []);
 
+    const handleContactChange = (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = event.target;
+
+        setContactForm((currentForm) => ({
+            ...currentForm,
+            [name]: value,
+        }));
+
+        if (contactError) {
+            setContactError("");
+        }
+    };
+
+    const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        setToast({
+            type: "error",
+            message: "The contact form isn't connected yet. Your message hasn't been sent.",
+        });
+    };
+
     return (
         <PageContainer>
-            <section>
-                <h1>Hi, I'm Clement.</h1>
+            <section className="hero-section">
+                <p className="hero-eyebrow">SOFTWARE DEVELOPER</p>
 
-                <h2>Software Developer</h2>
+                <h1>
+                    Hi, I'm Clement.
+                    <br />
+                    <span>I build for the web.</span>
+                </h1>
 
-                <p>
-                    I build web applications and backend systems
-                    using modern technologies.
+                <p className="hero-description">
+                    I build web applications and backend systems with a focus
+                    on reliable functionality, maintainable code, and practical
+                    solutions.
                 </p>
 
-                <Link to="/projects">
-                    View My Projects
-                </Link>
+                <div className="hero-actions">
+                    <Link to="/projects" className="hero-primary-action">
+                        Explore My Projects <span aria-hidden="true">↗</span>
+                    </Link>
+
+                    <a href="#about" className="hero-secondary-action">
+                        More About Me
+                    </a>
+                </div>
             </section>
 
-            <section>
+            <section id="about" className="content-section">
+                <p className="section-eyebrow">INTRODUCTION</p>
                 <h2>About Me</h2>
 
                 <p>
-                    I'm a software developer interested in building
-                    reliable and maintainable applications.
+                    I'm a software developer interested in building reliable
+                    and maintainable applications, from backend services to
+                    user-facing web experiences.
                 </p>
             </section>
 
-            <section>
+            <section className="content-section">
+                <p className="section-eyebrow">SELECTED WORK</p>
                 <h2>Featured Projects</h2>
 
-                {isProjLoading && (
-                    <p>Loading featured projects...</p>
-                )}
-
-                {projError && (
-                    <p>{projError}</p>
-                )}
+                {isProjLoading && <p>Loading featured projects...</p>}
+                {projError && <p role="alert">{projError}</p>}
 
                 {!isProjLoading && !projError && projects.length === 0 && (
                     <p>No featured projects available.</p>
@@ -96,29 +142,22 @@ function HomePage() {
                 {!isProjLoading && !projError && projects.length > 0 && (
                     <div className="project-grid">
                         {projects.map((project) => (
-                            <ProjectCard
-                                key={project.id}
-                                project={project}
-                            />
+                            <ProjectCard key={project.id} project={project} />
                         ))}
                     </div>
                 )}
 
-                <Link to="/projects">
-                    View All Projects
+                <Link to="/projects" className="section-action">
+                    View All Projects <span aria-hidden="true">→</span>
                 </Link>
             </section>
 
-            <section>
+            <section className="content-section">
+                <p className="section-eyebrow">MY TOOLKIT</p>
                 <h2>Technologies</h2>
 
-                {isTechLoading && (
-                    <p>Loading technologies...</p>
-                )}
-
-                {techError && (
-                    <p>{techError}</p>
-                )}
+                {isTechLoading && <p>Loading technologies...</p>}
+                {techError && <p role="alert">{techError}</p>}
 
                 {!isTechLoading && !techError && technologies.length === 0 && (
                     <p>No technologies available.</p>
@@ -126,24 +165,103 @@ function HomePage() {
 
                 {!isTechLoading && !techError && technologies.length > 0 && (
                     <div className="technology-grid">
-                        {technologies.map((tech) => (
+                        {technologies.map((technology) => (
                             <TechnologyCard
-                                key={tech.id}
-                                technology={tech}
+                                key={technology.id}
+                                technology={technology}
                             />
                         ))}
                     </div>
                 )}
             </section>
 
-            <section>
-                <h2>Contact</h2>
+            <section className="content-section contact-section">
+                <p className="section-eyebrow">GET IN TOUCH</p>
+                <h2>Let's connect.</h2>
 
                 <p>
-                    Interested in working together or learning more
-                    about my work?
+                    Interested in my work or have a project to discuss?
+                    I'd be glad to hear from you.
                 </p>
+
+                <form className="contact-form" onSubmit={handleContactSubmit}>
+                    <div className="contact-form-field">
+                        <label htmlFor="contact-name">Name</label>
+                        <input
+                            id="contact-name"
+                            name="name"
+                            type="text"
+                            autoComplete="name"
+                            placeholder="Your name"
+                            value={contactForm.name}
+                            onChange={handleContactChange}
+                            maxLength={100}
+                            required
+                        />
+                    </div>
+
+                    <div className="contact-form-field">
+                        <label htmlFor="contact-email">Email</label>
+                        <input
+                            id="contact-email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            value={contactForm.email}
+                            onChange={handleContactChange}
+                            maxLength={254}
+                            required
+                        />
+                    </div>
+
+                    <div className="contact-form-field">
+                        <label htmlFor="contact-subject">Subject</label>
+                        <input
+                            id="contact-subject"
+                            name="subject"
+                            type="text"
+                            placeholder="What would you like to discuss?"
+                            value={contactForm.subject}
+                            onChange={handleContactChange}
+                            maxLength={150}
+                            required
+                        />
+                    </div>
+
+                    <div className="contact-form-field">
+                        <label htmlFor="contact-message">Message</label>
+                        <textarea
+                            id="contact-message"
+                            name="message"
+                            placeholder="Write your message here..."
+                            rows={6}
+                            value={contactForm.message}
+                            onChange={handleContactChange}
+                            maxLength={5000}
+                            required
+                        />
+                    </div>
+
+                    {contactError && (
+                        <p className="contact-form-error" role="alert">
+                            {contactError}
+                        </p>
+                    )}
+
+                    <button type="submit" className="contact-form-submit">
+                        Send Message <span aria-hidden="true">↗</span>
+                    </button>
+                </form>
             </section>
+
+            {toast && (
+                <Toast
+                    type={toast.type}
+                    message={toast.message}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </PageContainer>
     );
 }
