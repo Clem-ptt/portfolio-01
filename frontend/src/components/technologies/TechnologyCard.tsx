@@ -1,4 +1,4 @@
-import type { Technology } from "../../types/technology";
+import type { Technology, TechnologyCategory } from "../../types/technology";
 
 type TechnologyCardProps = {
     technology: Technology;
@@ -13,6 +13,21 @@ function TechnologyCard({
     onEdit,
     onDelete,
 }: TechnologyCardProps) {
+
+    const categoryLabels: Record<TechnologyCategory, string> = {
+        PROGRAMMING_LANGUAGES: "Programming Languages",
+        FRONTEND: "Frontend",
+        BACKEND: "Backend",
+        DATABASE: "Database",
+        CLOUD_DEVOPS: "Cloud & DevOps",
+        TOOLS: "Tools",
+        AI_AUTOMATION: "AI & Automation",
+        SECURITY_INFRASTRUCTURE: "Security & Infrastructure",
+        DESIGN: "Design",
+        TESTING_QA: "Testing & QA",
+        OTHER: "Other",
+    };
+
     return (
         <article className="admin-technology-card">
             <div className="admin-technology-card-main">
@@ -35,7 +50,7 @@ function TechnologyCard({
                 <div className="admin-technology-info">
                     <h3>{technology.name}</h3>
                     <span className="admin-technology-category">
-                        {technology.category}
+                        {categoryLabels[technology.category]}
                     </span>
                 </div>
             </div>
