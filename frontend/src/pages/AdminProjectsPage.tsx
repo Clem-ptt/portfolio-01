@@ -42,6 +42,21 @@ const AdminProjectsPage = () => {
         }
     }, []);
 
+    const handleCreate = () => {
+        setEditingProject(null);
+        setIsFormOpen(true);
+    };
+
+    const handleEdit = (project: Project) => {
+        setEditingProject(project);
+        setIsFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setIsFormOpen(false);
+        setEditingProject(null);
+    };
+
     useEffect(() => {
         let cancelled = false;
 
@@ -88,21 +103,6 @@ const AdminProjectsPage = () => {
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [isFormOpen]);
-
-    const handleCreate = () => {
-        setEditingProject(null);
-        setIsFormOpen(true);
-    };
-
-    const handleEdit = (project: Project) => {
-        setEditingProject(project);
-        setIsFormOpen(true);
-    };
-
-    const handleCloseForm = () => {
-        setIsFormOpen(false);
-        setEditingProject(null);
-    };
 
     const handleProjectUpdated = (updatedProject: Project) => {
         setProjects((currentProjects) =>
