@@ -10,11 +10,16 @@ import type {
 } from "../../types/technology";
 
 const categories: { value: TechnologyCategory; label: string }[] = [
+    { value: "PROGRAMMING_LANGUAGES", label: "Programming Languages" },
     { value: "FRONTEND", label: "Frontend" },
     { value: "BACKEND", label: "Backend" },
     { value: "DATABASE", label: "Database" },
-    { value: "DEVOPS", label: "DevOps" },
+    { value: "CLOUD_DEVOPS", label: "Cloud & DevOps" },
     { value: "TOOLS", label: "Tools" },
+    { value: "AI_AUTOMATION", label: "AI & Automation" },
+    { value: "SECURITY_INFRASTRUCTURE", label: "Security & Infrastructure" },
+    { value: "DESIGN", label: "Design" },
+    { value: "TESTING_QA", label: "Testing & QA" },
     { value: "OTHER", label: "Other" },
 ];
 

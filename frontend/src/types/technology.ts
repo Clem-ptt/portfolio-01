@@ -1,9 +1,14 @@
 export type TechnologyCategory =
+    | "PROGRAMMING_LANGUAGES"
     | "FRONTEND"
     | "BACKEND"
     | "DATABASE"
-    | "DEVOPS"
+    | "CLOUD_DEVOPS"
     | "TOOLS"
+    | "AI_AUTOMATION"
+    | "SECURITY_INFRASTRUCTURE"
+    | "DESIGN"
+    | "TESTING_QA"
     | "OTHER";
 
 export type Technology = {

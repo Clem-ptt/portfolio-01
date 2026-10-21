@@ -61,13 +61,18 @@ model Technology {
 }
 
 enum TechnologyCategory {
+  PROGRAMMING_LANGUAGES
   FRONTEND
   BACKEND
   DATABASE
-  DEVOPS
+  CLOUD_DEVOPS
   TOOLS
+  AI_AUTOMATION
+  SECURITY_INFRASTRUCTURE
+  DESIGN
+  TESTING_QA
   OTHER
-}
+} 
 
 model Session {
   sid    String   @id @db.VarChar
