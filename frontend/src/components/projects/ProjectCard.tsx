@@ -66,7 +66,9 @@ function ProjectCard({
                 </div>
             )}
 
-            <p>{project.description}</p>
+            <p className="project-card-description">
+                {project.description}
+            </p>
 
             <div className="project-card-links">
                 {project.githubUrl && (

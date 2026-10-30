@@ -15,7 +15,7 @@ export const errorHandler = (
     next(error);
     return;
   }
-  
+
   if (error instanceof ZodError) {
     sendError(res, "Invalid request data", 400);
     return;
@@ -32,6 +32,10 @@ export const errorHandler = (
       return;
     }
   }
-
-  sendError(res, "Internal server error", 500);
+  
+  sendError(
+    res,
+    error instanceof Error ? error.message : "Internal server error",
+    500
+  );
 };

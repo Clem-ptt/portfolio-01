@@ -35,6 +35,20 @@ export const getTechnologyById = async (id: number) => {
 export const createTechnology = async (
     data: CreateTechnologyData
 ) => {
+    
+    const technology = await prisma.technology.findFirst({
+        where: {
+            name: {
+                equals: data.name.trim(),
+                mode: "insensitive",
+            },
+        },
+    });
+
+    if (technology) {
+        throw new Error("Technology with this name already exists");
+    }
+
     return prisma.technology.create({
         data,
     });

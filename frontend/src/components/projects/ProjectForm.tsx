@@ -7,6 +7,7 @@ import { getTechnologies } from "../../api/technologies";
 import type { CreateProject } from "../../types/project";
 import type { Project } from "../../types/project";
 import type { Technology } from "../../types/technology";
+import Toast, { type ToastType } from "../ui/Toast";
 
 type ProjectFormProps = {
     project?: Project;
@@ -34,10 +35,14 @@ const ProjectForm = ({
     });
 
     const [technologies, setTechnologies] = useState<Technology[]>([]);
-    const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingTechnologies, setIsLoadingTechnologies] =
         useState(true);
+        
+    const [toast, setToast] = useState<{
+        type: ToastType;
+        message: string;
+    } | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -51,11 +56,12 @@ const ProjectForm = ({
                 }
             } catch (error) {
                 if (!cancelled) {
-                    setError(
+                    console.error(
                         error instanceof Error
                             ? error.message
                             : "Failed to load technologies."
                     );
+                    setTechnologies([]);
                 }
             } finally {
                 if (!cancelled) {
@@ -105,7 +111,6 @@ const ProjectForm = ({
     ) => {
         event.preventDefault();
 
-        setError("");
         setIsSubmitting(true);
 
         try {
@@ -122,23 +127,36 @@ const ProjectForm = ({
 
             if (project) {
                 await updateProject(project.id, formData);
+                
+                setToast({
+                    type: "success",
+                    message: "Project updated successfully.",
+                });
             } else {
                 await createProject(formData);
+
+                setToast({
+                    type: "success",
+                    message: "Project created successfully.",
+                });
             }
 
             onSaved();
         } catch (error) {
-            setError(
+            setToast({
+                type: "error",
+                message: 
                 error instanceof Error
                     ? error.message
-                    : "Failed to save project."
-            );
+                    : "Failed to save project.",
+            });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
+        <>
         <section className="project-form">
             <form
                 id="project-form"
@@ -241,8 +259,7 @@ const ProjectForm = ({
                         </p>
                     ) : technologies.length === 0 ? (
                         <p className="project-form-status">
-                            No technologies available. Add technologies
-                            from the admin Technologies page first.
+                            No technologies available.
                         </p>
                     ) : (
                         <div className="project-form-technology-list">
@@ -268,12 +285,6 @@ const ProjectForm = ({
                         </div>
                     )}
                 </fieldset>
-
-                {error && (
-                    <p className="project-form-error" role="alert">
-                        {error}
-                    </p>
-                )}
             </form>
 
             <footer className="project-form-footer">
@@ -300,6 +311,15 @@ const ProjectForm = ({
                 </button>
             </footer>
         </section>
+        
+        {toast && (
+            <Toast
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast(null)}
+            />
+        )}
+        </>
     );
 };
 

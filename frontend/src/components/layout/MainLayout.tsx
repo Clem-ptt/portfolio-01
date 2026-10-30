@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 type Theme = "light" | "dark";
 
@@ -31,6 +32,8 @@ function MainLayout() {
                     <Outlet />
                 </div>
             </main>
+
+            <Footer />
         </>
     );
 }

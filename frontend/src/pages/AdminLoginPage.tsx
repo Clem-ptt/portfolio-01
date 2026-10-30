@@ -2,19 +2,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import PageContainer from "../components/layout/PageContainer";
+import Toast, { type ToastType } from "../components/ui/Toast";
 
 const AdminLoginPage = () => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    const [toast, setToast] = useState<{
+        type: ToastType;
+        message: string;
+    } | null>(null);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setError("");
+        setToast(null);
         setIsLoading(true);
 
         try {
@@ -25,11 +30,13 @@ const AdminLoginPage = () => {
 
             navigate("/admin");
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Login failed."
-            );
+            setToast({
+                type: "error",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Login failed."
+            });
         } finally {
             setIsLoading(false);
         }
@@ -90,12 +97,6 @@ const AdminLoginPage = () => {
                             />
                         </div>
 
-                        {error && (
-                            <p className="admin-login-error" role="alert">
-                                {error}
-                            </p>
-                        )}
-
                         <button
                             className="admin-login-submit"
                             type="submit"
@@ -113,6 +114,14 @@ const AdminLoginPage = () => {
                     </p>
                 </section>
             </PageContainer>
+            
+            {toast && (
+                <Toast
+                    type={toast.type}
+                    message={toast.message}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </main>
     );
 };

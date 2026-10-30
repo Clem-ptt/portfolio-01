@@ -55,6 +55,7 @@
 
 body,
 .site-nav,
+.site-footer,
 .project-card,
 .technology-card,
 .contact-section,
@@ -96,7 +97,7 @@ select {
 
 
 /* =========================================================
-   2. NAVBAR AND THEME TOGGLE
+   2. NAVBAR AND FOOTER
    ========================================================= */
 
 .site-nav {
@@ -196,6 +197,120 @@ select {
     }
 }
 
+.site-footer {
+    margin-top: auto;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--mono-border);
+}
+
+.site-footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    width: 100%;
+}
+
+.site-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.site-footer-brand a {
+    width: fit-content;
+    color: var(--mono-text);
+    font-size: 0.95rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.site-footer-brand a:hover {
+    opacity: 0.7;
+}
+
+.site-footer-brand p,
+.site-footer-bottom p {
+    margin: 0;
+    color: var(--mono-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.site-footer-contact {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.site-footer-contact a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+    color: var(--mono-muted);
+    font-size: 0.825rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.site-footer-contact a:hover {
+    border-color: var(--mono-border);
+    background: var(--mono-hover);
+    color: var(--mono-text);
+}
+
+.site-footer-contact a:focus-visible,
+.site-footer-brand a:focus-visible {
+    outline: 2px solid var(--mono-text);
+    outline-offset: 3px;
+}
+
+.site-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--mono-border);
+}
+
+@media (max-width: 600px) {
+    .site-footer {
+        padding-block: 1.25rem;
+    }
+
+    .site-footer-content {
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.825rem;
+    }
+
+    .site-footer-contact {
+        justify-content: flex-start;
+        gap: 0.25rem;
+        margin-inline: -0.5rem;
+    }
+
+    .site-footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+}
 
 /* =========================================================
    3. PAGE CONTAINER AND SHARED TYPOGRAPHY
@@ -421,6 +536,7 @@ select {
 }
 
 .contact-section {
+    margin-top: 2rem;
     padding: 3rem;
     border: 1px solid var(--mono-border);
     border-radius: 0.75rem;
@@ -551,6 +667,11 @@ select {
     .contact-form-submit {
         grid-column: 1;
     }
+}
+
+.text-justify {
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 
@@ -720,6 +841,11 @@ select {
 .project-card-links > a:hover {
     border-color: var(--mono-hover-border);
     background: var(--mono-bg);
+}
+
+.project-card-description {
+    text-align: justify;
+    text-align-last: left;
 }
 
 @media (min-width: 600px) and (max-width: 900px) {

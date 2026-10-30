@@ -10,6 +10,6 @@ export const createTechnologySchema = z.object({
 export const updateTechnologySchema = createTechnologySchema
     .partial()
     .refine(
-        (data) => Object.keys(data).length > 0,
+        (data) => Object.values(data).some((value) => value !== undefined),
         "At least one field must be provided"
     );

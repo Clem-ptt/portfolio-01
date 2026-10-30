@@ -220,3 +220,11 @@ p {
 .site-nav-links a {
     white-space: nowrap;
 }
+
+.site-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: min(100% - 2rem, 1120px);
+    margin-inline: auto;
+}

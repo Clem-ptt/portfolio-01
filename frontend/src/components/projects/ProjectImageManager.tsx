@@ -24,8 +24,6 @@ const ProjectImageManager = ({
     const [isLoading, setIsLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
     const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
-    const [error, setError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
     const [settingMainImageId, setSettingMainImageId] = useState<number | null>(null);
     const [mainImageUrl, setMainImageUrl] = useState(project.imageUrl);
     const [imageToDelete, setImageToDelete] = useState<number | null>(null);
@@ -39,7 +37,6 @@ const ProjectImageManager = ({
 
         const loadImages = async () => {
             try {
-                setError("");
                 const data = await getProjectImages(project.id);
 
                 if (!cancelled) {
@@ -47,11 +44,12 @@ const ProjectImageManager = ({
                 }
             } catch (error) {
                 if (!cancelled) {
-                    setError(
+                    console.error(
                         error instanceof Error
                             ? error.message
                             : "Failed to load project images."
                     );
+                    setImages([]);
                 }
             } finally {
                 if (!cancelled) {
@@ -96,8 +94,6 @@ const ProjectImageManager = ({
 
         try {
             setDeletingImageId(imageId);
-            setError("");
-            setSuccessMessage("");
             setToast(null);
 
             await deleteProjectImage(project.id, imageId);
@@ -159,18 +155,18 @@ const ProjectImageManager = ({
 
         try {
             setIsUploading(true);
-            setError("");
-            setSuccessMessage("");
 
             const image = await uploadProjectImage(project.id, file);
 
             setImages((current) => [...current, image]);
         } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to upload image."
-            );
+            setToast({
+                type: "error",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to upload image."
+            });
         } finally {
             setIsUploading(false);
             event.target.value = "";
@@ -180,8 +176,6 @@ const ProjectImageManager = ({
     const handleSetMainImage = async (imageId: number) => {
         try {
             setSettingMainImageId(imageId);
-            setError("");
-            setSuccessMessage("");
             setToast(null);
 
             const updatedProject = await setProjectMainImage(
@@ -231,18 +225,6 @@ const ProjectImageManager = ({
                             </p>
                         </div>
                     </header>
-
-                    {error && (
-                        <p className="admin-form-error" role="alert">
-                            {error}
-                        </p>
-                    )}
-
-                    {successMessage && (
-                        <p className="admin-form-success" role="status">
-                            {successMessage}
-                        </p>
-                    )}
 
                     <section className="image-gallery-section">
                         <h3>Project Gallery</h3>

@@ -4,7 +4,7 @@ import { getFeaturedProjects } from "../api/projects";
 import { getTechnologies } from "../api/technologies";
 import type { Project } from "../types/project";
 import type { Technology } from "../types/technology";
-import type { ContactForm } from "../types/contactform";
+// import type { ContactForm } from "../types/contactform";
 import ProjectCard from "../components/projects/ProjectCard";
 import PageContainer from "../components/layout/PageContainer";
 import TechnologyCard from "../components/technologies/TechnologyCard";
@@ -20,14 +20,14 @@ function HomePage() {
     const [projError, setProjError] = useState<string | null>(null);
     const [techError, setTechError] = useState<string | null>(null);
 
-    const [contactForm, setContactForm] = useState<ContactForm>({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-    });
+    // const [contactForm, setContactForm] = useState<ContactForm>({
+    //     name: "",
+    //     email: "",
+    //     subject: "",
+    //     message: "",
+    // });
 
-    const [contactError, setContactError] = useState("");
+    // const [contactError, setContactError] = useState("");
     const [toast, setToast] = useState<{
         type: ToastType;
         message: string;
@@ -65,29 +65,29 @@ function HomePage() {
         loadTechnologies();
     }, []);
 
-    const handleContactChange = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = event.target;
+    // const handleContactChange = (
+    //     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    // ) => {
+    //     const { name, value } = event.target;
 
-        setContactForm((currentForm) => ({
-            ...currentForm,
-            [name]: value,
-        }));
+    //     setContactForm((currentForm) => ({
+    //         ...currentForm,
+    //         [name]: value,
+    //     }));
 
-        if (contactError) {
-            setContactError("");
-        }
-    };
+    //     if (contactError) {
+    //         setContactError("");
+    //     }
+    // };
 
-    const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    // const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+    //     event.preventDefault();
 
-        setToast({
-            type: "error",
-            message: "The contact form isn't connected yet. Your message hasn't been sent.",
-        });
-    };
+    //     setToast({
+    //         type: "error",
+    //         message: "The contact form isn't connected yet. Your message hasn't been sent.",
+    //     });
+    // };
 
     return (
         <PageContainer>
@@ -111,9 +111,9 @@ function HomePage() {
                         Explore My Projects <span aria-hidden="true">↗</span>
                     </Link>
 
-                    <a href="#about" className="hero-secondary-action">
+                    {/* <a href="#about" className="hero-secondary-action">
                         More About Me
-                    </a>
+                    </a> */}
                 </div>
             </section>
 
@@ -121,10 +121,20 @@ function HomePage() {
                 <p className="section-eyebrow">INTRODUCTION</p>
                 <h2>About Me</h2>
 
-                <p>
-                    I'm a software developer interested in building reliable
-                    and maintainable applications, from backend services to
-                    user-facing web experiences.
+                <p className="text-justify">
+                    I'm a Software Engineer who enjoys turning ideas and requirements into practical, 
+                    reliable software. With nearly 3 years of professional experience, I've worked on 
+                    business applications where functionality, maintainability, and user needs play 
+                    an important role.
+
+                    My experience includes contributing to an ERP SaaS platform, developing and 
+                    maintaining features across different business modules, and working with systems 
+                    that support day-to-day business operations.
+
+                    I approach development with a focus on understanding problems before building 
+                    solutions. I value thoughtful technical decisions, maintainable code, and continuous 
+                    learning, while always looking for opportunities to improve the software I build 
+                    and the way I build it.
                 </p>
             </section>
 
@@ -184,7 +194,7 @@ function HomePage() {
                     I'd be glad to hear from you.
                 </p>
 
-                <form className="contact-form" onSubmit={handleContactSubmit}>
+                {/* <form className="contact-form" onSubmit={handleContactSubmit}>
                     <div className="contact-form-field">
                         <label htmlFor="contact-name">Name</label>
                         <input
@@ -252,7 +262,7 @@ function HomePage() {
                     <button type="submit" className="contact-form-submit">
                         Send Message <span aria-hidden="true">↗</span>
                     </button>
-                </form>
+                </form> */}
             </section>
 
             {toast && (
