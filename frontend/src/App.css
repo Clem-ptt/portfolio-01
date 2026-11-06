@@ -215,20 +215,13 @@ select {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-}
-
-.site-footer-brand a {
     width: fit-content;
-    color: var(--mono-text);
+    color: var(--mono-muted);
     font-size: 0.95rem;
     font-weight: 650;
     letter-spacing: -0.025em;
     text-decoration: none;
     transition: opacity 0.2s ease;
-}
-
-.site-footer-brand a:hover {
-    opacity: 0.7;
 }
 
 .site-footer-brand p,
@@ -545,6 +538,62 @@ select {
 
 .contact-section h2 {
     font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.contact-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.contact-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--mono-border);
+    border-radius: 4px;
+    background-color: transparent;
+    color: var(--mono-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.contact-action:first-child {
+    background-color: var(--mono-text);
+    border-color: var(--mono-text);
+    color: var(--mono-background);
+}
+
+.contact-action:hover {
+    background-color: var(--mono-surface);
+    border-color: var(--mono-text);
+    color: var(--mono-text);
+}
+
+.contact-action:first-child:hover {
+    background-color: transparent;
+    color: var(--mono-text);
+}
+
+.contact-action:focus-visible {
+    outline: 2px solid var(--mono-text);
+    outline-offset: 3px;
+}
+
+.contact-action img {
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.8;
+    flex-shrink: 0;
 }
 
 .contact-form {

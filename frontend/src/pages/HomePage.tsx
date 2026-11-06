@@ -122,18 +122,18 @@ function HomePage() {
                 <h2>About Me</h2>
 
                 <p className="text-justify">
-                    I'm a Software Engineer who enjoys turning ideas and requirements into practical, 
-                    reliable software. With nearly 3 years of professional experience, I've worked on 
-                    business applications where functionality, maintainability, and user needs play 
+                    I'm a Software Engineer who enjoys turning ideas and requirements into practical,
+                    reliable software. With nearly 3 years of professional experience, I've worked on
+                    business applications where functionality, maintainability, and user needs play
                     an important role.
 
-                    My experience includes contributing to an ERP SaaS platform, developing and 
-                    maintaining features across different business modules, and working with systems 
+                    My experience includes contributing to an ERP SaaS platform, developing and
+                    maintaining features across different business modules, and working with systems
                     that support day-to-day business operations.
 
-                    I approach development with a focus on understanding problems before building 
-                    solutions. I value thoughtful technical decisions, maintainable code, and continuous 
-                    learning, while always looking for opportunities to improve the software I build 
+                    I approach development with a focus on understanding problems before building
+                    solutions. I value thoughtful technical decisions, maintainable code, and continuous
+                    learning, while always looking for opportunities to improve the software I build
                     and the way I build it.
                 </p>
             </section>
@@ -193,6 +193,41 @@ function HomePage() {
                     Interested in my work or have a project to discuss?
                     I'd be glad to hear from you.
                 </p>
+
+                <div className="contact-actions">
+                    <a
+                        href="https://mail.google.com/mail/?view=cm&fs=1&to=clementpatt.salomon@gmail.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="contact-action"
+                    >
+                        <img src="https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/gmail-2026/default.svg" />
+          
+                        Gmail <span aria-hidden="true">↗</span>
+                    </a>
+
+                    <a
+                        href="https://www.linkedin.com/in/clement-patt-salomon/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="contact-action"
+                    >
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" />
+
+                        LinkedIn <span aria-hidden="true">↗</span>
+                    </a>
+
+                    <a
+                        href="https://github.com/Clem-ptt"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="contact-action"
+                    >
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" />
+
+                        GitHub <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
 
                 {/* <form className="contact-form" onSubmit={handleContactSubmit}>
                     <div className="contact-form-field">
