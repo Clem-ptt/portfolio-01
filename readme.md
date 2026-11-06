@@ -589,7 +589,7 @@ The application is deployed using Render, with Neon providing the production Pos
 
 ### Production URLs
 
-- **Portfolio:** [https://portfolio-01-frontend.onrender.com](https://portfolio-01-frontend.onrender.com)
+- **Portfolio:** [https://dev-clement.onrender.com](https://dev-clement.onrender.com)
 - **Backend API:** [https://portfolio-01-api.onrender.com](https://portfolio-01-api.onrender.com)
 
 ### Production Configuration
