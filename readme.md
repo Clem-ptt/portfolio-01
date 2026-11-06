@@ -171,6 +171,7 @@ Portfolio-01/
 │       │   ├── auth/
 │       │   ├── layout/
 │       │   ├── projects/
+│       │   ├── technologies/
 │       │   └── ui/
 │       ├── pages/
 │       └── types/
@@ -327,11 +328,16 @@ Content-Type: application/json
 
 Supported categories:
 
+- `PROGRAMMING_LANGUAGES`
 - `FRONTEND`
 - `BACKEND`
 - `DATABASE`
-- `DEVOPS`
+- `CLOUD_DEVOPS`
 - `TOOLS`
+- `AI_AUTOMATION`
+- `SECURITY_INFRASTRUCTURE`
+- `DESIGN`
+- `TESTING_QA`
 - `OTHER`
 
 Technology icons use external Devicon SVG URLs rather than being uploaded to Cloudinary.
